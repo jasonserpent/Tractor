@@ -1,0 +1,322 @@
+show configuration | no-more 
+## Last commit: 2023-06-13 14:07:42 CEST by gvlachos
+version 22.4R2.8;
+groups {
+    access {
+        interfaces {
+            <ge-*> {
+                mtu 4484;
+                unit 0 {
+                    family ethernet-switching {
+                        interface-mode access;
+                    }
+                }
+            }
+            <xe-*> {
+                mtu 4484;
+                unit 0 {
+                    family ethernet-switching {
+                        interface-mode access;
+                    }
+                }
+            }
+        }
+    }
+    trunk {
+        interfaces {
+            <ge-*> {
+                mtu 4484;
+                unit 0 {
+                    family ethernet-switching {
+                        interface-mode trunk;
+                        vlan {
+                            members all;
+                        }
+                    }
+                }
+            }
+            <xe-*> {
+                mtu 4484;
+                unit 0 {
+                    family ethernet-switching {
+                        interface-mode trunk;
+                        vlan {
+                            members all;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+system {
+    host-name qfx5120-70;
+    root-authentication {
+        encrypted-password "$1$/NHg28eO$pqaVlLlPQ2thlQQ0ZB.Vx/"; ## SECRET-DATA
+    }
+    commit synchronize;
+    login {
+        user gvlachos {
+            uid 5013;
+            class super-user;
+            authentication {
+                ssh-rsa "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDLKUPCAf/USLrvvWqrf9Q1lUTAtBGxhTxZKKB3C+O3ZXnafvwPoEddQJi+jTmt6yvaQCU78ct1TLW1mRKxSk+V7vEIrzV5FSztWj1/tdsEL+oswK0l89uxKijEyqSr7yOEXIqbPgVceNw/hnCo0624p9KfPdr+vNTfl/DSheKZhxWDFTtQL/Fc/5+dviEovA5xcls/iHMz3o3NWp2JqoRRpRb7RW4BlYittmgoSr/GhWDPbXdIqrfrAi310tnt6PAvooNiixIH9hxIXORbBCvmLHBqRsZ/qiMhELayqRdKR7cjpZipOVVWiYLzGqHx+H62qBy2PY2bC1BgrN3K5v5ROlgvaTXRV/NFWAcxhVM4JeDnwL7R5ckIVV7/Rr8uT8u6Ku8phDM9kSv7+Vjl6t4IKMXYQFk8K/objUDAz2fNI4q1mgFlWsu65rz3A+U7y9bFw+BzY7IDKvznYLLMz/r1fsF9Ut8n7iQGnXPezdTLn8l0CuGylpU6Rb0TkC+AwaU= gvlachos@gvlachos-mbp"; ## SECRET-DATA
+            }
+        }
+        user remote {
+            uid 2000;
+            class super-user;
+        }
+    }
+    services {
+        ssh {
+            client-alive-interval 120;
+        }
+        ftp;
+        telnet;
+        xnm-clear-text;
+        netconf {
+            ssh;
+        }
+        web-management {
+            http;
+        }
+    }
+    domain-name poc-nl.jnpr.net;
+    backup-router 172.30.196.1 destination 172.30.176.0/20;
+    time-zone Europe/Amsterdam;
+    authentication-order radius;
+    ports {
+        console log-out-on-disconnect;
+    }
+    name-server {
+        172.30.207.10;
+        172.30.207.13;
+    }
+    radius-server {
+        172.30.176.9 {
+            secret "$9$DMHPTz36CtOqmBEclLXik.mfT6/t1Eyn/"; ## SECRET-DATA
+            retry 3;
+        }
+        172.30.196.4 {
+            secret "$9$CgY9p1EcylvWx0B7VwgUDtuOBIEleWNVYre"; ## SECRET-DATA
+            retry 3;
+        }
+    }
+    syslog {
+        user * {
+            any emergency;
+        }
+        host 172.30.189.13 {
+            any notice;
+            authorization info;
+            interactive-commands info;
+        }
+        host 172.30.189.14 {
+            any notice;
+            authorization info;
+            interactive-commands info;
+        }
+        file messages {
+            any notice;
+            authorization info;
+        }
+    }
+    compress-configuration-files;
+    ntp {
+        boot-server 172.30.207.10; ## Warning: 'boot-server' is deprecated
+        server 172.30.207.10;
+    }
+}
+chassis {
+    aggregated-devices {
+        ethernet {
+            device-count 10;
+        }
+    }
+}
+interfaces {
+    et-0/0/0 {
+        ether-options {
+            802.3ad ae2;
+        }
+    }
+    et-0/0/1 {
+        description to-acx7100-9;
+        ether-options {
+            802.3ad ae0;
+        }
+    }
+    et-1/0/0 {
+        ether-options {
+            802.3ad ae2;
+        }
+    }
+    et-1/0/1 {
+        description to-acx7100-10;
+        ether-options {
+            802.3ad ae0;
+        }
+    }
+    ae0 {
+        mtu 9216;
+        aggregated-ether-options {
+            lacp {
+                active;
+                periodic fast;
+            }
+        }
+        unit 0 {
+            family ethernet-switching {
+                interface-mode trunk;
+                vlan {
+                    members [ vlan_300 vlan_301 vlan_302 vlan_303 vlan_3333 vlan_11 vlan_3000 ];
+                }
+            }
+        }
+    }
+    ae2 {
+        mtu 9216;
+        aggregated-ether-options {
+            lacp {
+                active;
+                periodic fast;
+            }
+        }
+        unit 0 {
+            family ethernet-switching {
+                interface-mode trunk;
+                vlan {
+                    members [ vlan_300 vlan_301 vlan_302 vlan_303 vlan_3333 vlan_11 vlan_3000 ];
+                }
+            }
+        }
+    }
+    irb {
+        unit 300 {
+            family inet {
+                address 30.30.30.30/24;
+            }
+        }
+    }
+    lo0 {
+        unit 0 {
+            family inet {
+                address 145.1.1.11/32;
+            }
+            family inet6 {
+                address 2a0e:cb00:aaaa::11/128;
+            }
+        }
+    }
+    vme {
+        unit 0 {
+            family inet {
+                address 172.30.196.54/24;
+            }
+        }
+    }
+}
+snmp {
+    location "AMS, EPOC location=0.2.02";
+    contact "emea-poc@juniper.net";
+    community public {
+        authorization read-only;
+        clients {
+            172.30.0.0/16;
+            0.0.0.0/0 restrict;
+        }
+    }
+    community private {
+        authorization read-write;
+        clients {
+            172.30.0.0/16;
+            0.0.0.0/0 restrict;
+        }
+    }
+    trap-options {
+        source-address 172.30.196.54;
+    }
+}
+policy-options {
+    policy-statement ECMP {
+        then {
+            load-balance per-packet;
+        }
+    }
+}
+routing-options {
+    router-id 145.1.1.11;
+    autonomous-system 100;
+    static {
+        route 10.0.0.0/8 {
+            next-hop 172.30.196.1;
+            no-readvertise;
+        }
+        route 172.16.0.0/12 {
+            next-hop 172.30.196.1;
+            no-readvertise;
+        }
+        route 192.168.30.0/24 next-hop 172.30.196.1;
+    }
+    forwarding-table {
+        export ECMP;
+    }
+}
+protocols {
+    lldp {
+        port-id-subtype interface-name;
+        neighbour-port-info-display port-id;
+        interface all;
+    }
+}
+virtual-chassis {
+    no-split-detection;
+    member 0 {
+        mastership-priority 129;
+    }
+    member 1 {
+        mastership-priority 128;
+    }
+    no-auto-conversion;
+}
+vlans {
+    vlan_11 {
+        vlan-id 11;
+    }
+    vlan_300 {
+        vlan-id 300;
+        l3-interface irb.300;
+    }
+    vlan_3000 {
+        vlan-id 3000;
+    }
+    vlan_301 {
+        vlan-id 301;
+    }
+    vlan_302 {
+        vlan-id 302;
+    }
+    vlan_303 {
+        vlan-id 303;
+    }
+    vlan_304 {
+        vlan-id 304;
+    }
+    vlan_305 {
+        vlan-id 305;
+    }
+    vlan_306 {
+        vlan-id 306;
+    }
+    vlan_307 {
+        vlan-id 307;
+    }
+    vlan_3333 {
+        vlan-id 3333;
+    }
+}
+
+{master:0}
+toob@qfx5120-70> exit 
+

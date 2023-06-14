@@ -1,0 +1,1 @@
+--- JUNOS 22.3R2.12 Kernel 64-bit  JNPR-12.1-20221212.98a33a0_buil

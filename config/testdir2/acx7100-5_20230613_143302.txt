@@ -1,0 +1,57 @@
+Last login: Tue Jun 13 15:30:07 2023 from 192.168.30.95
+--- JUNOS 23.1R1-S1.2-EVO Linux (none) 5.2.60-yocto-standard-g3549735 #1 SMP PREEMPT Mon Jan 9 09:19:10 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux
+cli
+show configuration
+exit
+toob@acx7100-5> cli
+                ^
+unknown command.
+
+toob@acx7100-5> show configuration 
+## Last commit: 2023-06-13 14:05:49 CEST by gvlachos
+version 23.1R1-S1.2-EVO;
+groups {
+    sonet {
+        interfaces {
+            <so-*> {
+                sonet-options {
+                    rfc-2615;
+                }
+            }
+        }
+    }
+    isis-mpls {
+        interfaces {
+            <*-*> {
+                unit <*> {
+                    family iso;
+                    family mpls;
+                }
+            }
+        }
+    }
+    OSPF-LFA-SYNC {
+---(more)---                                        Match except: xit
+version 23.1R1-S1.2-EVO;
+groups {
+    sonet {
+        interfaces {
+            <so-*> {
+                sonet-options {
+                    rfc-2615;
+                }
+            }
+        }
+    }
+    isis-mpls {
+        interfaces {
+            <*-*> {
+                unit <*> {
+                    family iso;
+                    family mpls;
+                }
+            }
+        }
+    }
+    OSPF-LFA-SYNC {
+---(more)---

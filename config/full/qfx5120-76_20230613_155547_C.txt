@@ -1,0 +1,79 @@
+--- JUNOS 22.2R3.15 Kernel 64-bit FLEX JNPR-12.1-20230303.4e45fe64_bui
+cli
+set cli screen-length 0
+show ver
+{master:0}
+toob@qfx5120-76> cli
+                 ^
+unknown command.
+
+{master:0}
+toob@qfx5120-76> set cli screen-length 0 
+Screen length set to 0
+
+{master:0}
+toob@qfx5120-76> show version 
+localre:
+--------------------------------------------------------------------------
+Hostname: qfx5120-76
+Model: qfx5120-48y-8c
+Junos: 22.2R3.15 flex
+JUNOS OS Kernel 64-bit FLEX [20230303.4e45fe64_builder_stable_12_222]
+JUNOS OS libs [20230303.4e45fe64_builder_stable_12_222]
+JUNOS OS runtime [20230303.4e45fe64_builder_stable_12_222]
+JUNOS OS time zone information [20230303.4e45fe64_builder_stable_12_222]
+JUNOS OS libs compat32 [20230303.4e45fe64_builder_stable_12_222]
+JUNOS OS 32-bit compatibility [20230303.4e45fe64_builder_stable_12_222]
+JUNOS py extensions [20230322.135429_builder_junos_222_r3]
+JUNOS py base [20230322.135429_builder_junos_222_r3]
+JUNOS OS vmguest [20230303.4e45fe64_builder_stable_12_222]
+JUNOS OS crypto [20230303.4e45fe64_builder_stable_12_222]
+JUNOS OS boot-ve files [20230303.4e45fe64_builder_stable_12_222]
+JUNOS network stack and utilities [20230322.135429_builder_junos_222_r3]
+JUNOS libs [20230322.135429_builder_junos_222_r3]
+JUNOS libs compat32 [20230322.135429_builder_junos_222_r3]
+JUNOS runtime [20230322.135429_builder_junos_222_r3]
+JUNOS na telemetry [22.2R3.15]
+JUNOS Web Management Platform Package [20230322.135429_builder_junos_222_r3]
+JUNOS qfx modules [20230322.135429_builder_junos_222_r3]
+JUNOS qfx runtime [20230322.135429_builder_junos_222_r3]
+JUNOS Routing Protocol Services Daemons [22.2R3.15]
+JUNOS Routing mpls-oam-basic [20230322.135429_builder_junos_222_r3]
+JUNOS Routing mpls-oam-advanced [20230322.135429_builder_junos_222_r3]
+JUNOS Routing lsys [20230322.135429_builder_junos_222_r3]
+JUNOS Routing controller-internal [20230322.135429_builder_junos_222_r3]
+JUNOS Routing controller-external [20230322.135429_builder_junos_222_r3]
+JUNOS Routing 32-bit Compatible Version [20230322.135429_builder_junos_222_r3]
+JUNOS Routing aggregated [20230322.135429_builder_junos_222_r3]
+JUNOS probe utility [20230322.135429_builder_junos_222_r3]
+JUNOS common platform support [20230322.135429_builder_junos_222_r3]
+JUNOS qfx platform support [20230322.135429_builder_junos_222_r3]
+JUNOS Openconfig [22.2R3.15]
+JUNOS dcp network modules [20230322.135429_builder_junos_222_r3]
+JUNOS modules [20230322.135429_builder_junos_222_r3]
+JUNOS L2 RSI Scripts [20230322.135429_builder_junos_222_r3]
+JUNOS qfx Data Plane Crypto Support [20230322.135429_builder_junos_222_r3]
+JUNOS daemons [20230322.135429_builder_junos_222_r3]
+JUNOS qfx daemons [20230322.135429_builder_junos_222_r3]
+JUNOS SDN Software Suite [20230322.135429_builder_junos_222_r3]
+JUNOS Extension Toolkit [20230322.135429_builder_junos_222_r3]
+JUNOS Phone-home [20230322.135429_builder_junos_222_r3]
+JUNOS Packet Forwarding Engine Support (DC-PFE) [20230322.135429_builder_junos_222_r3]
+JUNOS Packet Forwarding Engine Support (M/T Common) [20230322.135429_builder_junos_222_r3]
+JUNOS Juniper Malware Removal Tool (JMRT) [1.0.0+20230322.135429_builder_junos_222_r3]
+JUNOS J-Insight [20230322.135429_builder_junos_222_r3]
+JUNOS jfirmware [20230217.040945_builder_junos_222_r3]
+JUNOS Online Documentation [20230322.135429_builder_junos_222_r3]
+JUNOS jail runtime [20230303.4e45fe64_builder_stable_12_222]
+JUNOS dsa dsa [22.2R3.15]
+JUNOS Host Software [3.14.52-rt50-WR7.0.0.9_ovp:3.1.0]
+JUNOS Host qfx-5e host-control package [22.2R3.15]
+JUNOS Host qfx-5e host-platform package [22.2R3.15]
+JUNOS Host qfx-5e control-plane flex package [22.2R3.15]
+JUNOS Host qfx-5e platform package [22.2R3.15]
+JUNOS Host qfx-5e base package [22.2R3.15]
+JUNOS Host qfx-5e data-plane package [22.2R3.15]
+Junos for Automation Enhancement
+
+{master:0}
+toob@qfx5120-76> 

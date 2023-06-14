@@ -1,0 +1,1018 @@
+--- JUNOS 22.3R2.12 Kernel 64-bit  JNPR-12.1-20221212.98a33a0_buil
+cli
+set cli screen-length 0
+show configuration | no-more
+exit
+toob@srx4600-4> cli
+                ^
+unknown command.
+
+toob@srx4600-4> set cli screen-length 0 
+Screen length set to 0
+
+toob@srx4600-4> show configuration | no-more 
+## Last commit: 2023-06-13 14:06:54 CEST by gvlachos
+version 22.3R2.12;
+groups {
+    OSPF-LFA-SYNC {
+        protocols {
+            ospf {
+                backup-spf-options {
+                    per-prefix-calculation all;
+                }
+                traffic-engineering;
+                area 0.0.0.0 {
+                    interface <*> {
+                        node-link-protection;
+                        ldp-synchronization;
+                    }
+                }
+            }
+            ospf3 {
+                backup-spf-options {
+                    per-prefix-calculation all;
+                }
+                area 0.0.0.0 {
+                    interface <*> {
+                        node-link-protection;
+                    }
+                }
+            }
+        }
+    }
+    BFD_OSPF {
+        protocols {
+            ospf {
+                area 0.0.0.0 {
+                    interface <*> {
+                        bfd-liveness-detection {
+                            minimum-interval 300;
+                            multiplier 3;
+                            full-neighbors-only;
+                        }
+                    }
+                }
+            }
+            ospf3 {
+                area 0.0.0.0 {
+                    interface <*> {
+                        bfd-liveness-detection {
+                            minimum-interval 300;
+                            multiplier 3;
+                            full-neighbors-only;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    BGP-BFD {
+        routing-instances {
+            <*> {
+                protocols {
+                    bgp {
+                        group <*> {
+                            multipath;
+                            bfd-liveness-detection {
+                                minimum-interval 300;
+                                multiplier 3;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        protocols {
+            bgp {
+                group <*> {
+                    multipath;
+                    bfd-liveness-detection {
+                        minimum-interval 300;
+                        multiplier 3;
+                    }
+                }
+            }
+        }
+    }
+}
+apply-groups BGP-BFD;
+system {
+    host-name srx4600-4;
+    root-authentication {
+        encrypted-password "$1$/NHg28eO$pqaVlLlPQ2thlQQ0ZB.Vx/"; ## SECRET-DATA
+    }
+    commit synchronize;
+    login {
+        user gvlachos {
+            uid 5013;
+            class super-user;
+            authentication {
+                ssh-rsa "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDLKUPCAf/USLrvvWqrf9Q1lUTAtBGxhTxZKKB3C+O3ZXnafvwPoEddQJi+jTmt6yvaQCU78ct1TLW1mRKxSk+V7vEIrzV5FSztWj1/tdsEL+oswK0l89uxKijEyqSr7yOEXIqbPgVceNw/hnCo0624p9KfPdr+vNTfl/DSheKZhxWDFTtQL/Fc/5+dviEovA5xcls/iHMz3o3NWp2JqoRRpRb7RW4BlYittmgoSr/GhWDPbXdIqrfrAi310tnt6PAvooNiixIH9hxIXORbBCvmLHBqRsZ/qiMhELayqRdKR7cjpZipOVVWiYLzGqHx+H62qBy2PY2bC1BgrN3K5v5ROlgvaTXRV/NFWAcxhVM4JeDnwL7R5ckIVV7/Rr8uT8u6Ku8phDM9kSv7+Vjl6t4IKMXYQFk8K/objUDAz2fNI4q1mgFlWsu65rz3A+U7y9bFw+BzY7IDKvznYLLMz/r1fsF9Ut8n7iQGnXPezdTLn8l0CuGylpU6Rb0TkC+AwaU= gvlachos@gvlachos-mbp"; ## SECRET-DATA
+            }
+        }
+        user remote {
+            uid 2000;
+            class super-user;
+        }
+    }
+    services {
+        ssh {
+            client-alive-interval 120;
+        }
+        ftp;
+        telnet;
+        xnm-clear-text;
+        netconf {
+            ssh;
+        }
+        web-management {
+            http;
+        }
+    }
+    domain-name poc-nl.jnpr.net;
+    backup-router 172.30.181.1 destination 172.30.176.0/20;
+    time-zone Europe/Amsterdam;
+    authentication-order radius;
+    ports {
+        console log-out-on-disconnect;
+    }
+    name-server {
+        172.30.207.10;
+        172.30.207.13;
+    }
+    radius-server {
+        172.30.176.9 {
+            secret "$9$DMHPTz36CtOqmBEclLXik.mfT6/t1Eyn/"; ## SECRET-DATA
+            retry 3;
+        }
+        172.30.181.4 {
+            secret "$9$CgY9p1EcylvWx0B7VwgUDtuOBIEleWNVYre"; ## SECRET-DATA
+            retry 3;
+        }
+    }
+    syslog {
+        user * {
+            any emergency;
+        }
+        host 172.30.189.13 {
+            any notice;
+            authorization info;
+            interactive-commands info;
+        }
+        host 172.30.189.14 {
+            any notice;
+            authorization info;
+            interactive-commands info;
+        }
+        file cli_trace {
+            authorization any;
+            interactive-commands any;
+            archive size 10m files 2 world-readable;
+        }
+        file default-log-messages {
+            any any;
+            structured-data;
+        }
+        file deny-traffic {
+            any any;
+            match RT_FLOW_SESSION_DENY;
+            structured-data;
+        }
+        file interactive-commands {
+            interactive-commands error;
+        }
+        file messages {
+            any notice;
+            authorization info;
+        }
+        file nat-log {
+            any any;
+            match RT_SRC_NAT_PBA_;
+            structured-data;
+        }
+        file permit-traffic {
+            any any;
+            match RT_FLOW_SESSION_CLOSE;
+            structured-data;
+        }
+        console {
+            any none;
+        }
+        time-format year millisecond;
+    }
+    compress-configuration-files;
+    ntp {
+        boot-server 172.30.207.10; ## Warning: 'boot-server' is deprecated
+        server 172.30.207.10;
+    }
+}
+chassis {
+    aggregated-devices {
+        ethernet {
+            device-count 10;
+        }
+    }
+    fpc 1 {
+        pic 0 {
+            pic-mode 100G;
+        }
+        pic 1 {
+            number-of-ports 0;
+        }
+    }
+    high-availability {
+        local-id 2 local-ip 145.255.1.10;
+        peer-id 1 {
+            desc srx4600-3;
+            peer-ip 145.255.1.9;
+            interface lo0.1;
+            routing-instance icl;
+            vpn-profile MNHA-vpn;
+            liveness-detection {
+                minimum-interval 400;
+                multiplier 3;
+            }
+        }
+        services-redundancy-group 0 {
+            peer-id {
+                1;
+            }
+            install-on-failure-route {
+                3.3.3.3;
+                routing-instance MNHA-signal-routes;
+            }
+        }
+        services-redundancy-group 1 {
+            deployment-type routing;
+            peer-id {
+                1;
+            }
+            activeness-probe {
+                dest-ip {
+                    100.68.0.2;
+                    src-ip 10.46.56.1;
+                    routing-instance vr_inside;
+                }
+            }
+            active-signal-route {
+                1.1.1.1;
+                routing-instance MNHA-signal-routes;
+            }
+            backup-signal-route {
+                2.2.2.2;
+                routing-instance MNHA-signal-routes;
+            }
+            process-packet-on-backup;
+            activeness-priority 100;
+        }
+    }
+}
+security {
+    inactive: log {
+        cache;
+        mode stream;
+        format syslog;
+        stream to_syslog_srv {
+            format syslog;
+            category all;
+            host {
+                100.100.100.100;
+                port 514;
+                routing-instance vr_inside;
+            }
+            source-address 145.1.1.10;
+        }
+    }
+    ike {
+        proposal MNHA-prop {
+            description MNHA-ICL;
+            authentication-method pre-shared-keys;
+            dh-group group14;
+            authentication-algorithm sha-256;
+            encryption-algorithm aes-256-cbc;
+            lifetime-seconds 300;
+        }
+        policy MNHA-pol {
+            description iclpolicy;
+            proposals MNHA-prop;
+            pre-shared-key ascii-text "$9$1JJISlws4ZGi7-VY4ojiCtpOEclKM"; ## SECRET-DATA
+        }
+        gateway MNHA-gw {
+            ike-policy MNHA-pol;
+            version v2-only;
+        }
+    }
+    ipsec {
+        proposal MNHA-prop {
+            description ICL-esp;
+            protocol esp;
+            encryption-algorithm aes-256-gcm;
+            lifetime-seconds 300;
+        }
+        policy MNHA-pol {
+            description icl-ph2-pol;
+            proposals MNHA-prop;
+        }
+        vpn MNHA-vpn {
+            ha-link-encryption;
+            ike {
+                gateway MNHA-gw;
+                ipsec-policy MNHA-pol;
+            }
+        }
+    }
+    inactive: alg {
+        h323 disable;
+        mgcp disable;
+        msrpc disable;
+        sunrpc disable;
+        rsh disable;
+        sccp disable;
+        talk disable;
+        tftp disable;
+    }
+    inactive: flow {
+        aging {
+            early-ageout 30;
+            low-watermark 70;
+            high-watermark 90;
+        }
+        tcp-session {
+            rst-invalidate-session;
+            fin-invalidate-session;
+            rst-sequence-check;
+        }
+    }
+    inactive: nat {
+        source {
+            pool pba {
+                routing-instance {
+                    vr_inside;
+                }
+                address {
+                    210.0.0.0/8;
+                }
+                port {
+                    block-allocation {
+                        block-size 256;
+                        maximum-blocks-per-host 10;
+                        active-block-timeout 180;
+                        interim-logging-interval 1800;
+                    }
+                }
+                address-pooling paired;
+            }
+            address-persistent;
+            rule-set source-nat {
+                from zone vr_inside;
+                to zone internet;
+                rule r1 {
+                    match {
+                        source-address 100.68.0.2/32;
+                        destination-address 60.1.0.1/32;
+                        application any;
+                    }
+                    then {
+                        source-nat {
+                            off;
+                        }
+                    }
+                }
+                rule r2 {
+                    match {
+                        source-address 100.68.63.2/32;
+                        destination-address 70.1.0.1/32;
+                        application any;
+                    }
+                    then {
+                        source-nat {
+                            off;
+                        }
+                    }
+                }
+                rule r3 {
+                    match {
+                        source-address 100.68.0.0/16;
+                        destination-address 0.0.0.0/0;
+                        application any;
+                    }
+                    then {
+                        source-nat {
+                            pool {
+                                pba;
+                                persistent-nat {
+                                    permit any-remote-host;
+                                    inactivity-timeout 500;
+                                    max-session-number 1000;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    policies {
+        from-zone vr_inside to-zone internet {
+            policy to_internet {
+                match {
+                    source-address subs;
+                    destination-address any;
+                    application any;
+                }
+                then {
+                    permit;
+                    log {
+                        session-init;
+                    }
+                }
+            }
+        }
+        from-zone ICL to-zone ICL {
+            policy permit-icl-intrazone {
+                match {
+                    source-address any;
+                    destination-address any;
+                    application any;
+                }
+                then {
+                    permit;
+                }
+            }
+        }
+        from-zone internet to-zone vr_inside {
+            policy to_internet {
+                match {
+                    source-address any;
+                    destination-address subs;
+                    application any;
+                }
+                then {
+                    permit;
+                    log {
+                        session-init;
+                    }
+                }
+            }
+        }
+        from-zone vr_inside to-zone vr_inside {
+            policy permit {
+                match {
+                    source-address any;
+                    destination-address any;
+                    application any;
+                }
+                then {
+                    permit;
+                    inactive: log {
+                        session-init;
+                        session-close;
+                    }
+                }
+            }
+        }
+    }
+    zones {
+        functional-zone management {
+            host-inbound-traffic {
+                system-services {
+                    all;
+                }
+            }
+        }
+        security-zone internet {
+            address-book {
+                address loopbacks 145.1.1.0/24;
+                address ptps 10.100.0.0/16;
+                address subs 100.68.0.0/16;
+            }
+            host-inbound-traffic {
+                system-services {
+                    all;
+                }
+                protocols {
+                    all;
+                }
+            }
+            interfaces {
+                ae3.100;
+                ae1.100;
+            }
+        }
+        security-zone vr_inside {
+            address-book {
+                address subs 100.68.0.0/16;
+            }
+            host-inbound-traffic {
+                system-services {
+                    all;
+                }
+                protocols {
+                    all;
+                }
+            }
+            interfaces {
+                ae3.200;
+                ae1.200;
+                lo0.10;
+            }
+        }
+        security-zone ICL {
+            host-inbound-traffic {
+                system-services {
+                    ping;
+                    high-availability;
+                }
+                protocols {
+                    bgp;
+                }
+            }
+            interfaces {
+                ae1.10;
+                lo0.1;
+            }
+        }
+    }
+}
+interfaces {
+    et-1/0/0 {
+        description to-acx7100-6;
+        gigether-options {
+            802.3ad ae1;
+        }
+    }
+    et-1/0/1 {
+        description to-acx7100-6;
+        gigether-options {
+            802.3ad ae1;
+        }
+    }
+    et-1/0/2 {
+        description to-ptx10001-7;
+        gigether-options {
+            802.3ad ae3;
+        }
+    }
+    et-1/0/3 {
+        description to-ptx10001-7;
+        gigether-options {
+            802.3ad ae3;
+        }
+    }
+    ae1 {
+        vlan-tagging;
+        mtu 9192;
+        aggregated-ether-options {
+            lacp {
+                active;
+                periodic fast;
+            }
+        }
+        unit 10 {
+            description ICL;
+            vlan-id 10;
+            family inet {
+                address 192.168.2.1/31;
+            }
+        }
+        unit 100 {
+            vlan-id 100;
+            family inet {
+                address 10.100.0.17/31;
+            }
+            family inet6 {
+                address 2a0e:cb00:700b:100::17/127;
+            }
+        }
+        unit 200 {
+            vlan-id 200;
+            family inet {
+                address 10.200.0.17/31;
+            }
+            family inet6 {
+                address 2a0e:cb00:700b:200::17/127;
+            }
+        }
+    }
+    ae3 {
+        vlan-tagging;
+        mtu 9192;
+        aggregated-ether-options {
+            lacp {
+                active;
+                periodic fast;
+            }
+        }
+        unit 100 {
+            vlan-id 100;
+            family inet {
+                address 10.100.0.7/31;
+            }
+            family inet6 {
+                address 2a0e:cb00:700b:100::7/127;
+            }
+        }
+        unit 200 {
+            vlan-id 200;
+            family inet {
+                address 10.200.0.7/31;
+            }
+            family inet6 {
+                address 2a0e:cb00:700b:200::7/127;
+            }
+        }
+    }
+    fxp0 {
+        unit 0 {
+            family inet {
+                address 172.30.181.63/24;
+            }
+        }
+    }
+    lo0 {
+        unit 0 {
+            family inet {
+                address 145.1.1.10/32;
+            }
+            family inet6 {
+                address 2a0e:cb00:aaaa::10/128;
+            }
+        }
+        unit 1 {
+            family inet {
+                address 145.255.1.10/32;
+            }
+        }
+        unit 10 {
+            description mnha-probe-src;
+            family inet {
+                address 10.46.56.1/32;
+            }
+        }
+    }
+}
+snmp {
+    location "AMS, EPOC location=0.2.02";
+    contact "emea-poc@juniper.net";
+    community public {
+        authorization read-only;
+        clients {
+            172.30.0.0/16;
+            0.0.0.0/0 restrict;
+        }
+    }
+    community private {
+        authorization read-write;
+        clients {
+            172.30.0.0/16;
+            0.0.0.0/0 restrict;
+        }
+    }
+    trap-options {
+        source-address 172.30.181.63;
+    }
+}
+policy-options {
+    prefix-list PL-POOL-NAT44-1 {
+        200.0.0.0/8;
+    }
+    prefix-list PL-POOL-NAT44-2 {
+        210.0.0.0/8;
+    }
+    policy-statement ECMP {
+        then {
+            load-balance per-packet;
+        }
+    }
+    policy-statement PS-PUBLIC-OUT-MHNA {
+        term 1 {
+            from {
+                protocol aggregate;
+                prefix-list PL-POOL-NAT44-1;
+                condition 2_ROUTE_EXISTS;
+            }
+            then {
+                local-preference 50;
+                accept;
+            }
+        }
+        term 2 {
+            from {
+                protocol aggregate;
+                prefix-list PL-POOL-NAT44-1;
+            }
+            then {
+                local-preference 150;
+                accept;
+            }
+        }
+        term 3 {
+            from {
+                protocol aggregate;
+                prefix-list PL-POOL-NAT44-2;
+                condition 2_ROUTE_EXISTS;
+            }
+            then {
+                local-preference 150;
+                accept;
+            }
+        }
+        term 4 {
+            from {
+                protocol aggregate;
+                prefix-list PL-POOL-NAT44-2;
+            }
+            then {
+                local-preference 50;
+                accept;
+            }
+        }
+        term 5 {
+            from {
+                protocol bgp;
+                route-filter 100.68.0.2/32 exact;
+                route-filter 100.68.63.2/32 exact;
+            }
+            then accept;
+        }
+        term rest {
+            then reject;
+        }
+    }
+    policy-statement PS-PUBLIC-OUT-STD {
+        term 1 {
+            from {
+                protocol aggregate;
+                prefix-list PL-POOL-NAT44-2;
+            }
+            then {
+                community set srx2_nat;
+                accept;
+            }
+        }
+        term 2 {
+            from {
+                protocol bgp;
+                route-filter 100.68.0.2/32 exact;
+                route-filter 100.68.63.2/32 exact;
+            }
+            then accept;
+        }
+        term rest {
+            then reject;
+        }
+    }
+    policy-statement PS-REJECT-ALL {
+        term rest {
+            then reject;
+        }
+    }
+    policy-statement adv-bgp-def {
+        term 1 {
+            from {
+                protocol bgp;
+                route-filter 0.0.0.0/0 exact;
+            }
+            then {
+                community add srx2;
+                accept;
+            }
+        }
+        term 2 {
+            then reject;
+        }
+    }
+    policy-statement adv_icl_lo0 {
+        term lo0.1-address {
+            from {
+                protocol direct;
+                route-filter 145.255.1.10/32 exact;
+            }
+            then accept;
+        }
+        then reject;
+    }
+    policy-statement adv_subs_pool {
+        term 1 {
+            from {
+                protocol static;
+                route-filter 100.68.0.0/16 exact;
+            }
+            then accept;
+        }
+    }
+    policy-statement def_to_inside {
+        term 1 {
+            from {
+                instance master;
+                protocol bgp;
+                route-filter 0.0.0.0/0 exact;
+            }
+            then accept;
+        }
+        term 2 {
+            then reject;
+        }
+    }
+    policy-statement export-mnha-active-probe {
+        term direct {
+            from {
+                protocol direct;
+                route-filter 10.46.56.1/32 exact;
+            }
+            then accept;
+        }
+        then {
+            next policy;
+            reject;
+        }
+    }
+    policy-statement from_dir {
+        term 1 {
+            from protocol direct;
+            then accept;
+        }
+        term 2 {
+            then reject;
+        }
+    }
+    policy-statement private-pool {
+        term 1 {
+            from {
+                instance vr_inside;
+                protocol bgp;
+                route-filter 100.68.0.0/16 upto /32;
+            }
+            then accept;
+        }
+        term 2 {
+            then reject;
+        }
+    }
+    community srx1 members 65130:1001;
+    community srx1_nat members 65130:2001;
+    community srx2 members 65140:1002;
+    community srx2_nat members 65140:2002;
+    condition 2_ROUTE_EXISTS {
+        if-route-exists {
+            145.255.1.9/32;
+            table icl.inet.0;
+        }
+    }
+}
+routing-instances {
+    MNHA-signal-routes {
+        instance-type virtual-router;
+    }
+    icl {
+        apply-groups-except BGP-BFD;
+        instance-type virtual-router;
+        protocols {
+            bgp {
+                group icl-peers {
+                    family inet {
+                        unicast {
+                            loops 1;
+                        }
+                    }
+                    export adv_icl_lo0;
+                    peer-as 65100;
+                    local-as 65000;
+                    neighbor 192.168.2.0;
+                }
+            }
+        }
+        interface ae1.10;
+        interface lo0.1;
+    }
+    vr_inside {
+        instance-type virtual-router;
+        routing-options {
+            autonomous-system {
+                65140;
+                independent-domain;
+            }
+            static {
+                inactive: route 0.0.0.0/0 next-table inet.0;
+            }
+            aggregate {
+                route 200.0.0.0/8 discard;
+                route 210.0.0.0/8 discard;
+            }
+        }
+        protocols {
+            bgp {
+                group ebgp-inside {
+                    type external;
+                    family inet {
+                        unicast;
+                    }
+                    export [ export-mnha-active-probe adv-bgp-def ];
+                    local-as 65140;
+                    multipath;
+                    neighbor 10.200.0.6 {
+                        local-address 10.200.0.7;
+                        peer-as 65070;
+                    }
+                    neighbor 10.200.0.16 {
+                        local-address 10.200.0.17;
+                        peer-as 65090;
+                    }
+                }
+                group ebgp-outside {
+                    type external;
+                    family inet {
+                        unicast;
+                    }
+                    export adv_subs_pool;
+                    local-as 65140;
+                    multipath;
+                    neighbor 10.100.0.6 {
+                        local-address 10.100.0.7;
+                        peer-as 65222;
+                    }
+                    neighbor 10.100.0.16 {
+                        local-address 10.100.0.17;
+                        peer-as 65444;
+                    }
+                }
+            }
+        }
+        interface ae1.100;
+        interface ae1.200;
+        interface ae3.100;
+        interface ae3.200;
+        interface lo0.10;
+    }
+}
+protocols {
+    inactive: ospf {
+        area 0.0.0.0 {
+            interface lo0.0 {
+                passive;
+            }
+            interface ae1.100 {
+                interface-type p2p;
+            }
+            interface ae3.100 {
+                interface-type p2p;
+            }
+        }
+        reference-bandwidth 1000g;
+    }
+    inactive: bgp {
+        group to_rr {
+            type internal;
+            local-address 145.1.1.10;
+            family inet {
+                unicast;
+            }
+            export adv_subs_pool;
+            local-as 65040;
+            multipath;
+            neighbor 145.1.1.1;
+            neighbor 145.1.1.2;
+        }
+    }
+    inactive: ospf3 {
+        area 0.0.0.0 {
+            interface lo0.0 {
+                passive;
+            }
+            interface ae1.100 {
+                interface-type p2p;
+            }
+            interface ae3.100 {
+                interface-type p2p;
+            }
+        }
+        reference-bandwidth 1000g;
+    }
+    lldp {
+        port-id-subtype interface-name;
+        neighbour-port-info-display port-id;
+        interface all;
+    }
+}
+routing-options {
+    router-id 145.1.1.10;
+    autonomous-system 65040;
+    static {
+        route 172.16.0.0/12 {
+            next-hop 172.30.181.1;
+            no-readvertise;
+        }
+        route 10.0.0.0/8 {
+            next-hop 172.30.181.1;
+            no-readvertise;
+        }
+        inactive: route 100.68.0.0/16 discard;
+        route 192.168.30.0/24 next-hop 172.30.181.1;
+    }
+    forwarding-table {
+        export ECMP;
+    }
+}
+
+toob@srx4600-4> exit 
+

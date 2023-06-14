@@ -1,0 +1,69 @@
+import argparse
+from datetime import datetime
+import os
+from jnpr.junos import Device
+from jnpr.junos.utils.config import Config
+import paramiko
+
+# Parse command-line arguments
+parser = argparse.ArgumentParser(description='Pull configurations from Juniper devices')
+parser.add_argument('-l', '--hostname', help='Hostname or IP address of the device')
+args = parser.parse_args()
+
+# Set user and password
+username = 'toob'
+password = 'toob123'
+
+# Read the 'hostnames' file
+with open('hostnames', 'r') as file:
+    routers = file.read().splitlines()
+
+# Get the current timestamp
+timestamp = datetime.now().strftime("%Y%m%d_%H%M")
+
+# Pull configuration from the specified device(s) or all devices
+if args.hostname:
+    devices = [args.hostname]
+else:
+    devices = routers
+
+# Create a directory to store configurations
+config_dir = f'configs_{timestamp}'
+os.makedirs(config_dir, exist_ok=True)
+
+# Connect to each device and pull the configuration
+for router in devices:
+    try:
+        # Establish an SSH connection
+        client = paramiko.SSHClient()
+        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        client.load_system_host_keys()
+
+        # Check if the host key is already known
+        known_host = paramiko.util.log_to_file("paramiko.log")
+        try:
+            client.connect(router, username=username, password=password)
+        except paramiko.ssh_exception.SSHException:
+            client.connect(router, username=username, password=password, look_for_keys=False)
+            known_host.add(filename=os.path.expanduser("~/.ssh/known_hosts"))
+            client.connect(router, username=username, password=password)
+
+        # Open a NETCONF session with the device
+        dev = Device(host=router, user=username, password=password)
+        dev.open()
+
+        # Get the configuration
+        config = dev.rpc.get_config(options={'format': 'text'})
+
+        # Save the configuration to a file with a timestamp
+        filename = f'{router}_{timestamp}.txt'
+        file_path = os.path.join(config_dir, filename)
+        with open(file_path, 'w') as file:
+            file.write(config.text)
+
+        print(f'Configuration saved for {router} in file: {file_path}')
+
+        dev.close()
+
+    except Exception as ex:
+        print(f'An error occurred while connecting to {router}: {str(ex)}')

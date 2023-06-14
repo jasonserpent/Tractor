@@ -1,0 +1,2 @@
+--- JUNOS 22.4R2.8 Kernel 64-bit FLEX JNPR-12.1-20230321.be5f9c0_buil
+cli

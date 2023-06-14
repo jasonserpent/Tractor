@@ -1,0 +1,58 @@
+--- JUNOS 22.4R2.8 Kernel 64-bit FLEX JNPR-12.1-20230321.be5f9c0_buil
+cli
+show configuration
+exit
+{master:0}
+toob@qfx5120-70> cli
+                 ^
+unknown command.
+
+{master:0}
+toob@qfx5120-70> show configuration 
+## Last commit: 2023-06-13 14:07:42 CEST by gvlachos
+version 22.4R2.8;
+groups {
+    access {
+        interfaces {
+            <ge-*> {
+                mtu 4484;
+                unit 0 {
+                    family ethernet-switching {
+                        interface-mode access;
+                    }
+                }
+            }
+            <xe-*> {
+                mtu 4484;
+                unit 0 {
+                    family ethernet-switching {
+                        interface-mode access;
+                    }
+                }
+            }
+        }
+    }
+---(more)---                                        Match except: xit
+version 22.4R2.8;
+groups {
+    access {
+        interfaces {
+            <ge-*> {
+                mtu 4484;
+                unit 0 {
+                    family ethernet-switching {
+                        interface-mode access;
+                    }
+                }
+            }
+            <xe-*> {
+                mtu 4484;
+                unit 0 {
+                    family ethernet-switching {
+                        interface-mode access;
+                    }
+                }
+            }
+        }
+    }
+---(more)---

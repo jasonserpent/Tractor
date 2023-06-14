@@ -1,0 +1,21 @@
+Last login: Tue Jun 13 16:54:55 2023 from 192.168.30.95
+--- JUNOS 22.3R1-S2.2-EVO Linux (none) 5.2.60-yocto-standard-g9a086a2b7 #1 SMP PREEMPT Sun Jul 31 00:59:20 UTC 2022 x86_64 x86_64 x86_64 GNU/Linux
+cli
+set cli screen-length 0
+show ver
+toob@ptx10001-6> cli
+                 ^
+unknown command.
+
+toob@ptx10001-6> set cli screen-length 0 
+Screen length set to 0
+
+toob@ptx10001-6> show version 
+Hostname: ptx10001-6
+Model: ptx10001-36mr
+Junos: 22.3R1-S2.2-EVO
+Yocto: 3.0.2
+Linux Kernel: 5.2.60-yocto-standard-g9a086a2b7
+JUNOS-EVO OS 64-bit [junos-evo-install-ptx-fixed-x86-64-22.3R1-S2.2-EVO]
+
+toob@ptx10001-6> 

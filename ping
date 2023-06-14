@@ -1,0 +1,19 @@
+import ping3
+
+# Read the 'hostnames' file
+with open('hostnames', 'r') as file:
+    routers = file.read().splitlines()
+
+# Ping each device
+for router in routers:
+    try:
+        # Ping the device 5 times
+        for i in range(1):
+            response_time = ping3.ping(router)
+            if response_time is not None:
+                print(f'Ping successful! Response time for {router}: {response_time} ms')
+            else:
+                print(f'Ping failed for {router}')
+
+    except Exception as ex:
+        print(f'An error occurred while pinging {router}: {str(ex)}')

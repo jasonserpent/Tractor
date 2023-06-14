@@ -1,0 +1,116 @@
+import argparse
+from datetime import datetime
+import os
+import paramiko
+import time
+
+# Parse command-line arguments
+parser = argparse.ArgumentParser(description='Pull configurations from Juniper devices')
+parser.add_argument('-l', '--hostname', help='Hostname or IP address of the device')
+parser.add_argument('-d', '--directory', help='Project directory')
+parser.add_argument('-c', '--commands', nargs='+', help='Additional commands to execute')
+args = parser.parse_args()
+
+# Set user and password
+username = 'toob'
+password = 'toob123'
+
+# Read the 'hostnames' file
+with open('hostnames', 'r') as file:
+    routers = file.read().splitlines()
+
+# Get the current timestamp
+timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+# Pull configuration from the specified device(s) or all devices
+if args.hostname:
+    devices = [args.hostname]
+else:
+    devices = routers
+
+# Determine the base directory for configurations
+base_dir = 'config'
+
+# Check if the 'config' directory exists
+config_dir = os.path.join(os.getcwd(), base_dir)
+if not os.path.isdir(config_dir):
+    print('Config directory not found')
+    exit(1)
+
+# Save the configuration files directly in the project directory if specified
+if args.directory:
+    project_dir = args.directory
+    project_path = os.path.join(config_dir, project_dir)
+    os.makedirs(project_path, exist_ok=True)
+else:
+    project_dir = ''
+
+# Connect to each device and pull the configuration
+for router in devices:
+    try:
+        # Establish an SSH connection
+        client = paramiko.SSHClient()
+        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        client.load_system_host_keys()
+
+        client.connect(router, username=username, password=password)
+
+        # Create an SSH shell
+        shell = client.invoke_shell()
+        shell.send("cli\n")
+        shell.send("set cli screen-length 0\n")
+
+        # Execute additional commands if specified
+        if args.commands:
+            output = ''
+            for command in args.commands:
+                shell.send(f"{command}\n")
+                time.sleep(1)
+                while True:
+                    if shell.recv_ready():
+                        output += shell.recv(65535).decode('utf-8')
+                    else:
+                        break
+                    time.sleep(1)
+
+            # Determine the directory to save the additional command output
+            if project_dir:
+                config_dir = project_path
+
+            # Save the additional command output to a separate file with hostname and timestamp
+            filename = f'{router}_{timestamp}_C.txt'
+            file_path = os.path.join(config_dir, filename)
+            with open(file_path, 'w') as file:
+                file.write(output)
+
+            print(f'Additional command output saved for {router} in file: {file_path}')
+
+        shell.send("show configuration | no-more\n")
+        shell.send("exit\n")
+
+        # Wait for the command to complete
+        time.sleep(1)
+
+        # Read the command output
+        config_output = ''
+        while True:
+            if shell.recv_ready():
+                config_output += shell.recv(65535).decode('utf-8')
+            else:
+                break
+            time.sleep(1)
+
+        # Determine the directory to save the configuration
+        if project_dir:
+            config_dir = project_path
+
+        # Save the configuration to a file with hostname and timestamp
+        filename = f'{router}_{timestamp}.txt'
+        file_path = os.path.join(config_dir, filename)
+        with open(file_path, 'w') as file:
+            file.write(config_output)
+
+        print(f'Configuration saved for {router}')
+
+    except Exception as ex:
+        print(f'An error occurred while connecting to {router}: {str(ex)}')

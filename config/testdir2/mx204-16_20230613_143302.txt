@@ -1,0 +1,56 @@
+--- JUNOS 22.2R3.15 Kernel 64-bit  JNPR-12.1-20230303.4e45fe64_bui
+cli
+show configuration
+exit
+toob@mx204-16> cli
+               ^
+unknown command.
+
+toob@mx204-16> show configuration 
+## Last commit: 2023-06-13 14:04:54 CEST by gvlachos
+version 22.2R3.15;
+groups {
+    sonet {
+        interfaces {
+            <so-*> {
+                sonet-options {
+                    rfc-2615;
+                }
+            }
+        }
+    }
+    isis-mpls {
+        interfaces {
+            <*-*> {
+                unit <*> {
+                    family iso;
+                    family mpls;
+                }
+            }
+        }
+    }
+    DEBUG-BNG {
+---(more)---                                        Match except: xit
+version 22.2R3.15;
+groups {
+    sonet {
+        interfaces {
+            <so-*> {
+                sonet-options {
+                    rfc-2615;
+                }
+            }
+        }
+    }
+    isis-mpls {
+        interfaces {
+            <*-*> {
+                unit <*> {
+                    family iso;
+                    family mpls;
+                }
+            }
+        }
+    }
+    DEBUG-BNG {
+---(more)---

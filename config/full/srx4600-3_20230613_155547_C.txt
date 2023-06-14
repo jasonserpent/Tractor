@@ -1,0 +1,68 @@
+--- JUNOS 22.3R2.12 Kernel 64-bit  JNPR-12.1-20221212.98a33a0_buil
+cli
+set cli screen-length 0
+show ver
+toob@srx4600-3> cli
+                ^
+unknown command.
+
+toob@srx4600-3> set cli screen-length 0 
+Screen length set to 0
+
+toob@srx4600-3> show version 
+Hostname: srx4600-3
+Model: srx4600
+Junos: 22.3R2.12
+JUNOS OS Kernel 64-bit  [20221212.98a33a0_builder_stable_12_223]
+JUNOS OS libs [20221212.98a33a0_builder_stable_12_223]
+JUNOS OS runtime [20221212.98a33a0_builder_stable_12_223]
+JUNOS OS time zone information [20221212.98a33a0_builder_stable_12_223]
+JUNOS OS libs compat32 [20221212.98a33a0_builder_stable_12_223]
+JUNOS OS 32-bit compatibility [20221212.98a33a0_builder_stable_12_223]
+JUNOS py extensions [20230223.221505_builder_junos_223_r2]
+JUNOS py base [20230223.221505_builder_junos_223_r2]
+JUNOS OS vmguest [20221212.98a33a0_builder_stable_12_223]
+JUNOS OS package [20230213.192558_builder_stable_12]
+JUNOS OS crypto [20221212.98a33a0_builder_stable_12_223]
+JUNOS OS boot-ve files [20221212.98a33a0_builder_stable_12_223]
+JUNOS network stack and utilities [20230223.221505_builder_junos_223_r2]
+JUNOS libs [20230223.221505_builder_junos_223_r2]
+JUNOS libs compat32 [20230223.221505_builder_junos_223_r2]
+JUNOS runtime [20230223.221505_builder_junos_223_r2]
+JUNOS na telemetry [22.3R2.12]
+JUNOS Web Management Platform Package [20230223.221505_builder_junos_223_r2]
+JUNOS srx libs compat32 [20230223.221505_builder_junos_223_r2]
+JUNOS srx runtime [20230223.221505_builder_junos_223_r2]
+JUNOS srx platform support [20230223.221505_builder_junos_223_r2]
+JUNOS common platform support [20230223.221505_builder_junos_223_r2]
+JUNOS srxtvp runtime [20230223.221505_builder_junos_223_r2]
+JUNOS Routing mpls-oam-basic [20230223.221505_builder_junos_223_r2]
+JUNOS Routing lsys [20230223.221505_builder_junos_223_r2]
+JUNOS Routing controller-external [20230223.221505_builder_junos_223_r2]
+JUNOS Routing 32-bit Compatible Version [20230223.221505_builder_junos_223_r2]
+JUNOS Routing aggregated [20230223.221505_builder_junos_223_r2]
+Redis [20230223.221505_builder_junos_223_r2]
+JUNOS probe utility [20230223.221505_builder_junos_223_r2]
+JUNOS pppoe [20230223.221505_builder_junos_223_r2]
+JUNOS Openconfig [22.3R2.12]
+JUNOS mtx network modules [20230223.221505_builder_junos_223_r2]
+JUNOS modules [20230223.221505_builder_junos_223_r2]
+JUNOS srx modules [20230223.221505_builder_junos_223_r2]
+JUNOS srxtvp libs [20230223.221505_builder_junos_223_r2]
+JUNOS srx libs [20230223.221505_builder_junos_223_r2]
+JUNOS L2 RSI Scripts [20230223.221505_builder_junos_223_r2]
+JUNOS srx Data Plane Crypto Support [20230223.221505_builder_junos_223_r2]
+JUNOS ike [20230223.221505_builder_junos_223_r2]
+JUNOS daemons [20230223.221505_builder_junos_223_r2]
+JUNOS srx daemons [20230223.221505_builder_junos_223_r2]
+JUNOS High End AppQos Daemon [20230223.221505_builder_junos_223_r2]
+JUNOS Extension Toolkit [20230223.221505_builder_junos_223_r2]
+JUNOS Phone-home [20230223.221505_builder_junos_223_r2]
+JUNOS Juniper Malware Removal Tool (JMRT) [1.0.0+20230223.221505_builder_junos_223_r2]
+JUNOS J-Insight [20230223.221505_builder_junos_223_r2]
+JUNOS Online Documentation [20230223.221505_builder_junos_223_r2]
+JUNOS jail runtime [20221212.98a33a0_builder_stable_12_223]
+JUNOS FIPS mode utilities [20230223.221505_builder_junos_223_r2]
+JUNOS dsa dsa [22.3R2.12]
+
+toob@srx4600-3> 

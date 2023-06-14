@@ -1,0 +1,56 @@
+--- JUNOS 22.3R2.12 Kernel 64-bit  JNPR-12.1-20221212.98a33a0_buil
+cli
+show configuration
+exit
+toob@srx4600-3> cli
+                ^
+unknown command.
+
+toob@srx4600-3> show configuration 
+## Last commit: 2023-06-13 14:06:37 CEST by gvlachos
+version 22.3R2.12;
+groups {
+    OSPF-LFA-SYNC {
+        protocols {
+            ospf {
+                backup-spf-options {
+                    per-prefix-calculation all;
+                }
+                traffic-engineering;
+                area 0.0.0.0 {
+                    interface <*> {
+                        node-link-protection;
+                        ldp-synchronization;
+                    }
+                }
+            }
+            ospf3 {
+                backup-spf-options {
+                    per-prefix-calculation all;
+                }
+                area 0.0.0.0 {
+                    interface <*> {
+---(more)---                                        Match except: xit
+version 22.3R2.12;
+groups {
+    OSPF-LFA-SYNC {
+        protocols {
+            ospf {
+                backup-spf-options {
+                    per-prefix-calculation all;
+                }
+                traffic-engineering;
+                area 0.0.0.0 {
+                    interface <*> {
+                        node-link-protection;
+                        ldp-synchronization;
+                    }
+                }
+            }
+            ospf3 {
+                backup-spf-options {
+                    per-prefix-calculation all;
+                }
+                area 0.0.0.0 {
+                    interface <*> {
+---(more)---

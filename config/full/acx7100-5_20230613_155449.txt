@@ -1,0 +1,750 @@
+Last login: Tue Jun 13 16:54:02 2023 from 172.30.177.4
+--- JUNOS 23.1R1-S1.2-EVO Linux (none) 5.2.60-yocto-standard-g3549735 #1 SMP PREEMPT Mon Jan 9 09:19:10 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux
+cli
+set cli screen-length 0
+show configuration | no-more
+exit
+toob@acx7100-5> cli
+                ^
+unknown command.
+
+toob@acx7100-5> set cli screen-length 0 
+Screen length set to 0
+
+toob@acx7100-5> show configuration | no-more 
+## Last commit: 2023-06-13 14:05:49 CEST by gvlachos
+version 23.1R1-S1.2-EVO;
+groups {
+    sonet {
+        interfaces {
+            <so-*> {
+                sonet-options {
+                    rfc-2615;
+                }
+            }
+        }
+    }
+    isis-mpls {
+        interfaces {
+            <*-*> {
+                unit <*> {
+                    family iso;
+                    family mpls;
+                }
+            }
+        }
+    }
+    OSPF-LFA-SYNC {
+        protocols {
+            ospf {
+                backup-spf-options {
+                    per-prefix-calculation all;
+                }
+                traffic-engineering;
+                area 0.0.0.0 {
+                    interface <*> {
+                        node-link-protection;
+                        ldp-synchronization;
+                    }
+                }
+            }
+            ospf3 {
+                backup-spf-options {
+                    per-prefix-calculation all;
+                }
+                area 0.0.0.0 {
+                    interface <*> {
+                        node-link-protection;
+                    }
+                }
+            }
+        }
+    }
+    BFD_OSPF {
+        protocols {
+            ospf {
+                area 0.0.0.0 {
+                    interface <*> {
+                        bfd-liveness-detection {
+                            minimum-interval 300;
+                            multiplier 3;
+                            full-neighbors-only;
+                        }
+                    }
+                }
+            }
+            ospf3 {
+                area 0.0.0.0 {
+                    interface <*> {
+                        bfd-liveness-detection {
+                            minimum-interval 300;
+                            multiplier 3;
+                            full-neighbors-only;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    BGP-BFD {
+        routing-instances {
+            <*> {
+                protocols {
+                    bgp {
+                        group <*> {
+                            multipath;
+                            bfd-liveness-detection {
+                                minimum-interval 300;
+                                multiplier 3;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        protocols {
+            bgp {
+                group <*> {
+                    multipath;
+                    bfd-liveness-detection {
+                        minimum-interval 300;
+                        multiplier 3;
+                    }
+                }
+            }
+        }
+    }
+}
+apply-groups [ sonet OSPF-LFA-SYNC BFD_OSPF BGP-BFD ];
+system {
+    host-name acx7100-5;
+    root-authentication {
+        encrypted-password "$1$/NHg28eO$pqaVlLlPQ2thlQQ0ZB.Vx/"; ## SECRET-DATA
+    }
+    commit synchronize;
+    login {
+        user gvlachos {
+            uid 5013;
+            class super-user;
+            authentication {
+                ssh-rsa "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDLKUPCAf/USLrvvWqrf9Q1lUTAtBGxhTxZKKB3C+O3ZXnafvwPoEddQJi+jTmt6yvaQCU78ct1TLW1mRKxSk+V7vEIrzV5FSztWj1/tdsEL+oswK0l89uxKijEyqSr7yOEXIqbPgVceNw/hnCo0624p9KfPdr+vNTfl/DSheKZhxWDFTtQL/Fc/5+dviEovA5xcls/iHMz3o3NWp2JqoRRpRb7RW4BlYittmgoSr/GhWDPbXdIqrfrAi310tnt6PAvooNiixIH9hxIXORbBCvmLHBqRsZ/qiMhELayqRdKR7cjpZipOVVWiYLzGqHx+H62qBy2PY2bC1BgrN3K5v5ROlgvaTXRV/NFWAcxhVM4JeDnwL7R5ckIVV7/Rr8uT8u6Ku8phDM9kSv7+Vjl6t4IKMXYQFk8K/objUDAz2fNI4q1mgFlWsu65rz3A+U7y9bFw+BzY7IDKvznYLLMz/r1fsF9Ut8n7iQGnXPezdTLn8l0CuGylpU6Rb0TkC+AwaU= gvlachos@gvlachos-mbp"; ## SECRET-DATA
+            }
+        }
+        user remote {
+            uid 2000;
+            class super-user;
+        }
+    }
+    syslog {
+        user * {
+            any emergency;
+        }
+        host 172.30.189.13 {
+            any notice;
+            authorization info;
+            interactive-commands info;
+        }
+        host 172.30.189.14 {
+            any notice;
+            authorization info;
+            interactive-commands info;
+        }
+        file messages {
+            any notice;
+            authorization info;
+        }
+    }
+    services {
+        ssh {
+            root-login allow;
+            client-alive-interval 120;
+        }
+        ftp;
+        telnet;
+        xnm-clear-text;
+        netconf {
+            ssh;
+        }
+        web-management {
+            http;
+        }
+    }
+    domain-name poc-nl.jnpr.net;
+    backup-router 172.30.177.1 destination 172.30.176.0/20;
+    time-zone Europe/Amsterdam;
+    authentication-order radius;
+    ports {
+        console log-out-on-disconnect;
+    }
+    name-server {
+        172.30.207.10;
+        172.30.207.13;
+    }
+    radius-server {
+        172.30.176.9 {
+            secret "$9$DMHPTz36CtOqmBEclLXik.mfT6/t1Eyn/"; ## SECRET-DATA
+            retry 3;
+        }
+        172.30.177.4 {
+            secret "$9$CgY9p1EcylvWx0B7VwgUDtuOBIEleWNVYre"; ## SECRET-DATA
+            retry 3;
+        }
+    }
+    compress-configuration-files;
+    ntp {
+        boot-server 172.30.207.10; ## Warning: 'boot-server' is deprecated
+        server 172.30.207.10;
+    }
+}
+chassis {
+    aggregated-devices {
+        ethernet {
+            device-count 10;
+        }
+    }
+    network-services enhanced-ip;
+}
+interfaces {
+    et-0/0/0 {
+        description to-acx7100-9;
+        mtu 9216;
+        unit 0 {
+            family inet {
+                address 10.100.0.60/31;
+            }
+            family inet6 {
+                address 2a0e:cb00:700b:100::60/127;
+            }
+            family mpls;
+        }
+    }
+    et-0/0/1 {
+        description to-ptx10001-6;
+        ether-options {
+            802.3ad ae2;
+        }
+    }
+    et-0/0/2 {
+        description to-mx204-5;
+        ether-options {
+            802.3ad ae3;
+        }
+    }
+    et-0/0/3 {
+        description to-mx204-5;
+        ether-options {
+            802.3ad ae3;
+        }
+    }
+    et-0/0/4 {
+        description to-qfx5120-74;
+        ether-options {
+            802.3ad ae4;
+        }
+    }
+    et-0/0/5 {
+        description to-qfx5120-75;
+        ether-options {
+            802.3ad ae4;
+        }
+    }
+    et-0/0/6 {
+        description to-acx7100-6;
+        ether-options {
+            802.3ad ae0;
+        }
+    }
+    et-0/0/7 {
+        description to-acx7100-6;
+        ether-options {
+            802.3ad ae0;
+        }
+    }
+    et-0/0/8 {
+        description to-srx4600-3;
+        ether-options {
+            802.3ad ae1;
+        }
+    }
+    et-0/0/9 {
+        description to-srx4600-3;
+        ether-options {
+            802.3ad ae1;
+        }
+    }
+    et-0/0/11 {
+        description to-ptx10001-6;
+        ether-options {
+            802.3ad ae2;
+        }
+    }
+    ae0 {
+        mtu 9216;
+        aggregated-ether-options {
+            lacp {
+                active;
+                periodic fast;
+            }
+        }
+        unit 0 {
+            family inet {
+                address 10.100.0.10/31;
+            }
+            family inet6 {
+                address 2a0e:cb00:700b:100::10/127;
+            }
+            family mpls;
+        }
+    }
+    ae1 {
+        flexible-vlan-tagging;
+        mtu 9196;
+        encapsulation flexible-ethernet-services;
+        aggregated-ether-options {
+            lacp {
+                active;
+                periodic fast;
+            }
+        }
+        unit 10 {
+            vlan-id 10;
+            family inet {
+                address 192.168.1.0/31;
+            }
+        }
+        unit 100 {
+            vlan-id 100;
+            family inet {
+                address 10.100.0.22/31;
+            }
+            family inet6 {
+                address 2a0e:cb00:700b:100::22/127;
+            }
+        }
+        unit 200 {
+            vlan-id 200;
+            family inet {
+                address 10.200.0.22/31;
+            }
+            family inet6 {
+                address 2a0e:cb00:700b:200::22/127;
+            }
+        }
+    }
+    ae2 {
+        mtu 9216;
+        aggregated-ether-options {
+            lacp {
+                active;
+                periodic fast;
+            }
+        }
+        unit 0 {
+            family inet {
+                address 10.100.0.34/31;
+            }
+            family inet6 {
+                address 2a0e:cb00:700b:100::34/127;
+            }
+            family mpls;
+        }
+    }
+    ae3 {
+        flexible-vlan-tagging;
+        mtu 9216;
+        encapsulation flexible-ethernet-services;
+        aggregated-ether-options {
+            minimum-links 2;
+            lacp {
+                active;
+                periodic fast;
+            }
+        }
+        unit 100 {
+            vlan-id 100;
+            family inet {
+                address 10.100.0.36/31;
+            }
+            family inet6 {
+                address 2a0e:cb00:700b:100::36/127;
+            }
+            family mpls;
+        }
+        unit 200 {
+            vlan-id 200;
+            family inet {
+                address 10.200.0.36/31;
+            }
+            family inet6 {
+                address 2a0e:cb00:700b:200::36/127;
+            }
+        }
+    }
+    ae4 {
+        flexible-vlan-tagging;
+        mtu 9216;
+        encapsulation flexible-ethernet-services;
+        aggregated-ether-options {
+            lacp {
+                active;
+                periodic fast;
+            }
+        }
+        unit 10 {
+            vlan-id 10;
+            family inet {
+                address 10.1.1.2/24 {
+                    vrrp-group 1 {
+                        virtual-address 10.1.1.1;
+                        priority 119;
+                        preempt;
+                        accept-data;
+                    }
+                }
+            }
+        }
+        unit 11 {
+            encapsulation vlan-bridge;
+            vlan-id 11;
+        }
+    }
+    irb {
+        unit 11 {
+            family inet {
+                address 11.11.11.5/24;
+            }
+        }
+    }
+    lo0 {
+        unit 0 {
+            family inet {
+                address 145.1.1.3/32;
+            }
+            family inet6 {
+                address 2a0e:cb00:aaaa::3/128;
+            }
+        }
+        unit 111 {
+            family inet {
+                address 145.1.111.3/32;
+            }
+        }
+    }
+    re0:mgmt-0 {
+        unit 0 {
+            family inet {
+                address 172.30.177.71/24;
+            }
+        }
+    }
+}
+snmp {
+    location "AMS, EPOC location=0.2.02";
+    contact "emea-poc@juniper.net";
+    community public {
+        authorization read-only;
+        clients {
+            172.30.0.0/16;
+            0.0.0.0/0 restrict;
+        }
+    }
+    community private {
+        authorization read-write;
+        clients {
+            172.30.0.0/16;
+            0.0.0.0/0 restrict;
+        }
+    }
+    trap-options {
+        source-address 172.30.177.71;
+    }
+}
+forwarding-options {
+    hash-key {
+        family inet {
+            layer-3;
+            layer-4;
+        }
+        family inet6 {
+            layer-3;
+            layer-4;
+        }
+        family mpls {
+            all-labels;
+            payload {
+                ip {
+                    layer-3-only;
+                }
+            }
+        }
+        family multiservice {
+            source-mac;
+            destination-mac;
+        }
+    }
+}
+policy-options {
+    policy-statement ECMP {
+        then {
+            load-balance per-packet;
+        }
+    }
+    policy-statement cgnat-exp {
+        term 1 {
+            from {
+                protocol bgp;
+                route-filter 0.0.0.0/0 exact;
+            }
+            then {
+                community add acx-5;
+                accept;
+            }
+        }
+        term 2 {
+            then reject;
+        }
+    }
+    policy-statement export-irb {
+        term 1 {
+            from {
+                protocol direct;
+                route-filter 10.1.1.0/24 exact;
+            }
+            then accept;
+        }
+    }
+    community acx-5 members 65333:2006;
+}
+routing-instances {
+    INTERNET {
+        instance-type vrf;
+        routing-options {
+            autonomous-system {
+                65333;
+                independent-domain;
+            }
+        }
+        protocols {
+            bgp {
+                group srx_inet {
+                    type external;
+                    family inet {
+                        unicast;
+                    }
+                    export cgnat-exp;
+                    multipath;
+                    neighbor 10.100.0.23 {
+                        local-address 10.100.0.22;
+                        family inet {
+                            unicast {
+                                loops 2;
+                            }
+                        }
+                        peer-as 65130;
+                    }
+                }
+                local-as 65333;
+            }
+        }
+        description "Internet VRF";
+        interface ae1.100;
+        interface lo0.111;
+        route-distinguisher 145.1.111.3:661;
+        vrf-target target:65100:661;
+        vrf-table-label;
+    }
+    evpn-provisioning {
+        apply-groups-except BGP-BFD;
+        instance-type mac-vrf;
+        protocols {
+            evpn {
+                encapsulation mpls;
+            }
+        }
+        service-type vlan-based;
+        interface ae4.11;
+        route-distinguisher 145.1.1.3:11;
+        vrf-target target:100:11;
+        vlans {
+            vlan_11 {
+                vlan-id 11;
+                interface ae4.11;
+                l3-interface irb.11;
+            }
+        }
+    }
+    inactive: evpn-vlan-based-vlan10 {
+        instance-type mac-vrf;
+        protocols {
+            evpn {
+                encapsulation mpls;
+            }
+        }
+        service-type vlan-based;
+        interface ae4.10;
+        route-distinguisher 145.1.1.3:10;
+        vrf-target target:100:10;
+        vlans {
+            vlan_10 {
+                vlan-id 10;
+                interface ae4.10;
+                l3-interface irb.10;
+            }
+        }
+    }
+    vrf_icl {
+        apply-groups-except BGP-BFD;
+        instance-type vrf;
+        protocols {
+            bgp {
+                group srx-icl {
+                    advertise-peer-as;
+                    peer-as 65000;
+                    local-as 65100;
+                    neighbor 192.168.1.1;
+                }
+            }
+        }
+        interface ae1.10;
+        route-distinguisher 145.1.1.3:2551;
+        vrf-target target:65100:2551;
+        vrf-table-label;
+    }
+    vrf_inside {
+        instance-type vrf;
+        routing-options {
+            autonomous-system {
+                65080;
+                independent-domain;
+            }
+        }
+        protocols {
+            bgp {
+                group ebgp-inside {
+                    type external;
+                    local-address 10.200.0.22;
+                    family inet {
+                        unicast;
+                    }
+                    peer-as 65130;
+                    local-as 65080;
+                    multipath;
+                    neighbor 10.200.0.23 {
+                        local-as 65080;
+                    }
+                }
+            }
+        }
+        interface ae1.200;
+        route-distinguisher 145.1.1.3:651;
+        vrf-target target:65100:651;
+        vrf-table-label;
+    }
+}
+routing-options {
+    router-id 145.1.1.3;
+    autonomous-system 65100;
+    static {
+        route 10.0.0.0/8 {
+            next-hop 172.30.177.1;
+            no-readvertise;
+        }
+        route 172.16.0.0/12 {
+            next-hop 172.30.177.1;
+            no-readvertise;
+        }
+        route 192.168.30.0/24 next-hop 172.30.177.1;
+    }
+    forwarding-table {
+        export ECMP;
+    }
+}
+protocols {
+    bgp {
+        group to_rr {
+            local-address 145.1.1.3;
+            family inet {
+                unicast;
+            }
+            family inet-vpn {
+                unicast;
+            }
+            family inet6 {
+                unicast;
+            }
+            family inet6-vpn {
+                unicast;
+            }
+            family evpn {
+                signaling;
+            }
+            export export-irb;
+            peer-as 65100;
+            neighbor 145.1.1.1;
+            neighbor 145.1.1.2;
+        }
+    }
+    ldp {
+        track-igp-metric;
+        interface et-0/0/0.0;
+        interface ae0.0;
+        interface ae2.0;
+        interface ae3.100;
+        interface lo0.0;
+    }
+    mpls {
+        ipv6-tunneling;
+        interface ae0.0;
+        interface ae2.0;
+        interface et-0/0/0.0;
+        interface ae3.100;
+    }
+    ospf {
+        area 0.0.0.0 {
+            interface lo0.0 {
+                passive;
+            }
+            interface et-0/0/0.0 {
+                interface-type p2p;
+            }
+            interface ae0.0 {
+                interface-type p2p;
+            }
+            interface ae2.0 {
+                interface-type p2p;
+            }
+            interface ae3.100 {
+                interface-type p2p;
+            }
+        }
+        reference-bandwidth 1000g;
+    }
+    ospf3 {
+        area 0.0.0.0 {
+            interface et-0/0/0.0 {
+                interface-type p2p;
+            }
+            interface ae0.0 {
+                interface-type p2p;
+            }
+            interface ae2.0 {
+                interface-type p2p;
+            }
+            interface ae3.100 {
+                interface-type p2p;
+            }
+            interface lo0.0 {
+                passive;
+            }
+        }
+        reference-bandwidth 1000g;
+    }
+    lldp {
+        port-id-subtype interface-name;
+        neighbour-port-info-display port-id;
+        interface all;
+    }
+}
+
+toob@acx7100-5> exit 
+

@@ -1,0 +1,58 @@
+--- JUNOS 21.4R3-S3.4 built 2023-03-09 00:15:52 UTC
+cli
+show configuration
+exit
+{master:0}
+toob@qfx5100-49> cli
+                 ^
+unknown command.
+
+{master:0}
+toob@qfx5100-49> show configuration 
+## Last commit: 2023-06-13 14:08:40 CEST by gvlachos
+version 21.4R3-S3.4;
+groups {
+    access {
+        interfaces {
+            <ge-*> {
+                mtu 4484;
+                unit 0 {
+                    family ethernet-switching {
+                        interface-mode access;
+                    }
+                }
+            }
+            <xe-*> {
+                mtu 4484;
+                unit 0 {
+                    family ethernet-switching {
+                        interface-mode access;
+                    }
+                }
+            }
+        }
+    }
+---(more)---                                        Match except: xit
+version 21.4R3-S3.4;
+groups {
+    access {
+        interfaces {
+            <ge-*> {
+                mtu 4484;
+                unit 0 {
+                    family ethernet-switching {
+                        interface-mode access;
+                    }
+                }
+            }
+            <xe-*> {
+                mtu 4484;
+                unit 0 {
+                    family ethernet-switching {
+                        interface-mode access;
+                    }
+                }
+            }
+        }
+    }
+---(more)---

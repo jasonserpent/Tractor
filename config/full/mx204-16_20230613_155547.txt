@@ -1,0 +1,1150 @@
+show configuration | no-more 
+## Last commit: 2023-06-13 14:04:54 CEST by gvlachos
+version 22.2R3.15;
+groups {
+    sonet {
+        interfaces {
+            <so-*> {
+                sonet-options {
+                    rfc-2615;
+                }
+            }
+        }
+    }
+    isis-mpls {
+        interfaces {
+            <*-*> {
+                unit <*> {
+                    family iso;
+                    family mpls;
+                }
+            }
+        }
+    }
+    DEBUG-BNG {
+        system {
+            processes {
+                general-authentication-service {
+                    traceoptions {
+                        file auth-trace.log size 10m files 10;
+                        flag all;
+                    }
+                }
+                smg-service {
+                    traceoptions {
+                        file smgd.log size 10m files 10;
+                        level all;
+                        flag all;
+                    }
+                }
+                dhcp-service {
+                    traceoptions {
+                        file dhcp-trace.log size 1g files 10;
+                        level all;
+                        flag all;
+                    }
+                }
+            }
+        }
+    }
+    OSPF-LFA-SYNC {
+        protocols {
+            ospf {
+                backup-spf-options {
+                    per-prefix-calculation all;
+                }
+                traffic-engineering;
+                area 0.0.0.0 {
+                    interface <*> {
+                        node-link-protection;
+                        ldp-synchronization;
+                    }
+                }
+            }
+            ospf3 {
+                backup-spf-options {
+                    per-prefix-calculation all;
+                }
+                area 0.0.0.0 {
+                    interface <*> {
+                        node-link-protection;
+                    }
+                }
+            }
+        }
+    }
+    BFD_OSPF {
+        protocols {
+            ospf {
+                area 0.0.0.0 {
+                    interface <*> {
+                        bfd-liveness-detection {
+                            minimum-interval 300;
+                            multiplier 3;
+                            full-neighbors-only;
+                        }
+                    }
+                }
+            }
+            ospf3 {
+                area 0.0.0.0 {
+                    interface <*> {
+                        bfd-liveness-detection {
+                            minimum-interval 300;
+                            multiplier 3;
+                            full-neighbors-only;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    BGP-BFD {
+        protocols {
+            bgp {
+                group <*> {
+                    multipath;
+                    bfd-liveness-detection {
+                        minimum-interval 300;
+                        multiplier 3;
+                    }
+                }
+            }
+        }
+    }
+    rpm_preempt_vpws {
+        services {
+            rpm {
+                probe PING-ALQ {
+                    test to-MX5 {
+                        probe-type icmp-ping;
+                        target address 192.168.240.1;
+                        probe-count 5;
+                        probe-interval 1;
+                        test-interval 3;
+                        source-address 192.168.240.2;
+                        thresholds {
+                            successive-loss 5;
+                        }
+                    }
+                }
+            }
+        }
+        event-options {
+            policy PING_NOT_OK {
+                events PING_TEST_FAILED;
+                attributes-match {
+                    ping_test_failed.test-owner matches PING-ALQ;
+                    ping_test_failed.test-name matches to-MX5;
+                }
+                then {
+                    change-configuration {
+                        commands {
+                            "set interfaces ps2 esi df-election-type preference value 2100";
+                            "deactivate event-options policy PING_NOT_OK";
+                        }
+                        user-name aris;
+                        commit-options {
+                            log "updating configuration from event policy PING_NOT_OK";
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+apply-groups [ OSPF-LFA-SYNC BFD_OSPF BGP-BFD ];
+system {
+    host-name mx204-16;
+    root-authentication {
+        encrypted-password "$1$/NHg28eO$pqaVlLlPQ2thlQQ0ZB.Vx/"; ## SECRET-DATA
+    }
+    commit synchronize;
+    configuration-database {
+        max-db-size 314572800;
+    }
+    login {
+        user gvlachos {
+            uid 5013;
+            class super-user;
+            authentication {
+                ssh-rsa "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDLKUPCAf/USLrvvWqrf9Q1lUTAtBGxhTxZKKB3C+O3ZXnafvwPoEddQJi+jTmt6yvaQCU78ct1TLW1mRKxSk+V7vEIrzV5FSztWj1/tdsEL+oswK0l89uxKijEyqSr7yOEXIqbPgVceNw/hnCo0624p9KfPdr+vNTfl/DSheKZhxWDFTtQL/Fc/5+dviEovA5xcls/iHMz3o3NWp2JqoRRpRb7RW4BlYittmgoSr/GhWDPbXdIqrfrAi310tnt6PAvooNiixIH9hxIXORbBCvmLHBqRsZ/qiMhELayqRdKR7cjpZipOVVWiYLzGqHx+H62qBy2PY2bC1BgrN3K5v5ROlgvaTXRV/NFWAcxhVM4JeDnwL7R5ckIVV7/Rr8uT8u6Ku8phDM9kSv7+Vjl6t4IKMXYQFk8K/objUDAz2fNI4q1mgFlWsu65rz3A+U7y9bFw+BzY7IDKvznYLLMz/r1fsF9Ut8n7iQGnXPezdTLn8l0CuGylpU6Rb0TkC+AwaU= gvlachos@gvlachos-mbp"; ## SECRET-DATA
+            }
+        }
+        user remote {
+            uid 2000;
+            class super-user;
+        }
+    }
+    services {
+        ssh {
+            client-alive-interval 120;
+        }
+        ftp;
+        telnet;
+        xnm-clear-text;
+        netconf {
+            ssh;
+        }
+        dhcp-local-server {
+            dhcpv6 {
+                group TOOB_PUBLIC-DHCPv6-GRP-1 {
+                    overrides {
+                        delete-binding-on-renegotiation;
+                        dual-stack TOOB-PUBLIC-DUAL-STACK;
+                    }
+                    interface ps1.0;
+                    interface ps2.0;
+                }
+            }
+            pool-match-order {
+                external-authority;
+                option-82;
+                ip-address-first;
+            }
+            group TOOB_PUBLIC-DHCPv4-GRP-1 {
+                overrides {
+                    client-discover-match incoming-interface;
+                    delete-binding-on-renegotiation;
+                    dual-stack TOOB-PUBLIC-DUAL-STACK;
+                }
+                interface ps1.0;
+                interface ps2.0;
+            }
+            dual-stack-group TOOB-PUBLIC-DUAL-STACK {
+                authentication {
+                    password test;
+                    username-include {
+                        mac-address;
+                    }
+                }
+                dynamic-profile TOOB-SUBSCRIBER-DOUBLETAG-IP-PROFILE;
+                inactive: protocol-master inactive: inet;
+            }
+        }
+        web-management {
+            http;
+        }
+        subscriber-management {
+            enable;
+            redundancy {
+                interface ps1.0 {
+                    local-inet-address 172.16.255.8;
+                    shared-key grp1;
+                }
+                interface ps2.0 {
+                    local-inet-address 172.16.255.8;
+                    shared-key grp2;
+                }
+                protocol {
+                    pseudo-wire;
+                }
+                no-advertise-routes-on-backup;
+                route-operation-interval 1;
+            }
+        }
+    }
+    domain-name poc-nl.jnpr.net;
+    backup-router 172.30.190.1 destination 172.30.176.0/20;
+    time-zone Europe/Amsterdam;
+    authentication-order radius;
+    ports {
+        console log-out-on-disconnect;
+    }
+    name-server {
+        172.30.207.10;
+        172.30.207.13;
+    }
+    radius-server {
+        172.30.176.9 {
+            secret "$9$DMHPTz36CtOqmBEclLXik.mfT6/t1Eyn/"; ## SECRET-DATA
+            retry 3;
+        }
+        172.30.190.4 {
+            secret "$9$CgY9p1EcylvWx0B7VwgUDtuOBIEleWNVYre"; ## SECRET-DATA
+            retry 3;
+        }
+    }
+    dynamic-profile-options {
+        versioning;
+    }
+    syslog {
+        user * {
+            any emergency;
+        }
+        host 172.30.189.13 {
+            any notice;
+            authorization info;
+            interactive-commands info;
+        }
+        host 172.30.189.14 {
+            any notice;
+            authorization info;
+            interactive-commands info;
+        }
+        file messages {
+            any notice;
+            authorization info;
+        }
+        time-format millisecond;
+    }
+    compress-configuration-files;
+    processes {
+        inactive: smg-service {
+            inactive: traceoptions {
+                file smgd.log size 10m files 10;
+                level all;
+                flag all;
+            }
+        }
+        dhcp-service {
+            max-leasequery-reply-packet-retries 15;
+            leasequery-reply-packet-retry-timer 20;
+            max-leasequery-reply-packet-process 100;
+        }
+    }
+    ntp {
+        boot-server 172.30.207.10; ## Warning: 'boot-server' is deprecated
+        server 172.30.207.10;
+    }
+}
+chassis {
+    aggregated-devices {
+        ethernet {
+            device-count 10;
+        }
+    }
+    pseudowire-service {
+        device-count 10;
+    }
+    fpc 0 {
+        pic 0 {
+            tunnel-services {
+                bandwidth 200g;
+            }
+            port 0 {
+                speed 100g;
+            }
+            port 1 {
+                speed 100g;
+            }
+            port 2 {
+                speed 100g;
+            }
+            port 3 {
+                speed 100g;
+            }
+        }
+        pic 1 {
+            number-of-ports 0;
+        }
+        max-queues 256k;
+    }
+    network-services enhanced-ip;
+}
+access-profile TOOB-ACCESS-PROFILE;
+interfaces {
+    stacked-interface-set;
+    et-0/0/0 {
+        description to-ptx10001-7;
+        gigether-options {
+            802.3ad ae0;
+        }
+    }
+    gr-0/0/0 {
+        unit 1 {
+            description DHCP-ALQ;
+            point-to-point;
+            tunnel {
+                source 145.1.1.8;
+                destination 145.1.1.7;
+            }
+            family inet {
+                address 192.168.240.2/30;
+            }
+            family inet6 {
+                address fd00:6438:8e33:12::2/64;
+            }
+        }
+    }
+    lt-0/0/0 {
+        hierarchical-scheduler maximum-hierarchy-levels 2;
+    }
+    et-0/0/1 {
+        description to-ptx10001-7;
+        gigether-options {
+            802.3ad ae0;
+        }
+    }
+    et-0/0/2 {
+        description to-acx7100-6;
+        gigether-options {
+            802.3ad ae3;
+        }
+    }
+    et-0/0/3 {
+        description to-acx7100-6;
+        gigether-options {
+            802.3ad ae3;
+        }
+    }
+    ae0 {
+        flexible-vlan-tagging;
+        mtu 9216;
+        encapsulation flexible-ethernet-services;
+        aggregated-ether-options {
+            lacp {
+                active;
+                periodic fast;
+            }
+        }
+        unit 100 {
+            vlan-id 100;
+            family inet {
+                address 10.100.0.40/31;
+            }
+            family inet6 {
+                address 2a0e:cb00:700b:100::40/127;
+            }
+            family mpls;
+        }
+        unit 200 {
+            vlan-id 200;
+            family inet {
+                address 10.200.0.40/31;
+            }
+            family inet6 {
+                address 2a0e:cb00:700b:200::40/127;
+            }
+        }
+    }
+    ae3 {
+        flexible-vlan-tagging;
+        mtu 9216;
+        encapsulation flexible-ethernet-services;
+        aggregated-ether-options {
+            minimum-links 2;
+            lacp {
+                active;
+                periodic fast;
+            }
+        }
+        unit 100 {
+            vlan-id 100;
+            family inet {
+                address 10.100.0.19/31;
+            }
+            family inet6 {
+                address 2a0e:cb00:700b:100::19/127;
+            }
+            family mpls;
+        }
+        unit 200 {
+            vlan-id 200;
+            family inet {
+                address 10.200.0.19/31;
+            }
+            family inet6 {
+                address 2a0e:cb00:700b:200::19/127;
+            }
+        }
+    }
+    fxp0 {
+        unit 0 {
+            family inet {
+                address 172.30.190.27/24;
+            }
+        }
+    }
+    lo0 {
+        unit 0 {
+            family inet {
+                address 145.1.1.8/32;
+            }
+            family inet6 {
+                address 2a0e:cb00:aaaa::8/128;
+            }
+        }
+        unit 1 {
+            family inet {
+                address 172.16.255.8/32;
+            }
+            family inet6 {
+                address 2a0e:cb00::8/128;
+            }
+        }
+    }
+    ps1 {
+        anchor-point {
+            lt-0/0/0;
+        }
+        flexible-vlan-tagging;
+        auto-configure {
+            stacked-vlan-ranges {
+                dynamic-profile TOOB-SUBSCRIBER-DOUBLETAG-VLAN-PROFILE {
+                    accept [ dhcp-v4 dhcp-v6 ];
+                    ranges {
+                        1-3000,any;
+                    }
+                }
+                authentication {
+                    password vlan;
+                    username-include {
+                        user-prefix vlan;
+                    }
+                }
+            }
+            remove-when-no-subscribers;
+        }
+        mtu 2022;
+        esi {
+            00:03:00:03:03:00:00:00:00:01;
+            single-active;
+            df-election-type {
+                preference {
+                    value 2000;
+                }
+            }
+        }
+        mac 26:fc:4e:00:00:01;
+        no-gratuitous-arp-request;
+        unit 0 {
+            encapsulation ethernet-ccc;
+        }
+    }
+    ps2 {
+        anchor-point {
+            lt-0/0/0;
+        }
+        flexible-vlan-tagging;
+        auto-configure {
+            stacked-vlan-ranges {
+                dynamic-profile TOOB-SUBSCRIBER-DOUBLETAG-VLAN-PROFILE {
+                    accept [ dhcp-v4 dhcp-v6 ];
+                    ranges {
+                        1-3000,any;
+                    }
+                }
+                authentication {
+                    password vlan;
+                    username-include {
+                        user-prefix vlan;
+                    }
+                }
+            }
+            remove-when-no-subscribers;
+        }
+        mtu 2022;
+        esi {
+            00:03:00:03:03:00:00:00:00:02;
+            single-active;
+            df-election-type {
+                preference {
+                    value 1000;
+                }
+            }
+        }
+        mac 26:fc:4e:00:00:02;
+        no-gratuitous-arp-request;
+        unit 0 {
+            encapsulation ethernet-ccc;
+        }
+    }
+}
+snmp {
+    location "AMS, EPOC location=0.2.02";
+    contact "emea-poc@juniper.net";
+    community public {
+        authorization read-only;
+        clients {
+            172.30.0.0/16;
+            0.0.0.0/0 restrict;
+        }
+    }
+    community private {
+        authorization read-write;
+        clients {
+            172.30.0.0/16;
+            0.0.0.0/0 restrict;
+        }
+    }
+    trap-options {
+        source-address 172.30.190.27;
+    }
+}
+policy-options {
+    policy-statement ECMP {
+        then {
+            load-balance per-packet;
+        }
+    }
+    policy-statement cgnat-export-subs {
+        term 1 {
+            from {
+                protocol access-internal;
+                route-filter 100.68.0.0/15 upto /32;
+            }
+            then accept;
+        }
+        term 2 {
+            then reject;
+        }
+    }
+    policy-statement ipv6-import-vpn {
+        term 1 {
+            from {
+                family inet6;
+                community target:65100:661;
+            }
+            then accept;
+        }
+        term 2 {
+            from community target:65100:651;
+            then accept;
+        }
+    }
+    community target:65100:651 members target:65100:651;
+    community target:65100:661 members target:65100:661;
+}
+class-of-service {
+    classifiers {
+        ieee-802.1 CLASSIFIER_DOT1P {
+            forwarding-class FC_BEST_EFFORT {
+                loss-priority low code-points CP_1P_BEST_EFFORT;
+            }
+            forwarding-class FC_EF {
+                loss-priority low code-points CP_1P_EF;
+            }
+        }
+    }
+    code-point-aliases {
+        ieee-802.1 {
+            CP_1P_BEST_EFFORT 000;
+            CP_1P_EF 101;
+        }
+    }
+    drop-profiles {
+        WRED_DROP {
+            fill-level 25 drop-probability 0;
+            fill-level 100 drop-probability 100;
+        }
+    }
+    forwarding-classes {
+        class FC_BEST_EFFORT queue-num 0 priority low;
+        class FC_EF queue-num 1 priority low;
+    }
+    rewrite-rules {
+        ieee-802.1 REWRITE_DOT1P {
+            forwarding-class FC_BEST_EFFORT {
+                loss-priority low code-point CP_1P_BEST_EFFORT;
+            }
+        }
+    }
+    scheduler-maps {
+        CF_SCHED_MAP {
+            forwarding-class FC_BEST_EFFORT scheduler BE_SCHED;
+            forwarding-class FC_EF scheduler FC_SCHED;
+        }
+    }
+    schedulers {
+        BE_SCHED {
+            priority low;
+            drop-profile-map loss-priority low protocol any drop-profile WRED_DROP;
+        }
+        FC_SCHED {
+            priority low;
+            drop-profile-map loss-priority low protocol any drop-profile WRED_DROP;
+        }
+    }
+}
+access {
+    radius-server {
+        10.1.1.100 {
+            secret "$9$wOgZjmPQn6Amf39CtRE"; ## SECRET-DATA
+            timeout 10;
+            retry 10;
+            max-outstanding-requests 2000;
+            source-address 145.1.1.8;
+        }
+    }
+    profile TOOB-ACCESS-PROFILE {
+        inactive: accounting-order radius;
+        authentication-order radius;
+        radius {
+            authentication-server 10.1.1.100;
+            inactive: accounting-server 10.1.1.100;
+            options {
+                nas-identifier LDN-TELEHN-COR-1;
+                calling-station-id-delimiter /;
+                calling-station-id-format {
+                    agent-circuit-id;
+                    agent-remote-id;
+                    stacked-vlan;
+                }
+                client-authentication-algorithm direct;
+                client-accounting-algorithm direct;
+                coa-dynamic-variable-validation;
+            }
+        }
+        inactive: accounting {
+            order radius;
+            accounting-stop-on-access-deny;
+            immediate-update;
+            coa-immediate-update;
+            update-interval 1440;
+            statistics volume-time;
+            family-state-change-immediate-update;
+        }
+    }
+    inactive: profile none {
+        authentication-order none;
+    }
+    domain {
+        map default {
+            aaa-routing-instance default;
+            target-routing-instance vrf_inside;
+        }
+    }
+}
+routing-instances {
+    EVPN-VPWS-vc1 {
+        instance-type evpn-vpws;
+        protocols {
+            evpn {
+                interface ps1.0 {
+                    vpws-service-id {
+                        local 1007;
+                        remote 1005;
+                    }
+                }
+            }
+        }
+        interface ps1.0;
+        route-distinguisher 145.1.1.8:300;
+        vrf-target target:65100:300;
+    }
+    EVPN-VPWS-vc2 {
+        instance-type evpn-vpws;
+        protocols {
+            evpn {
+                interface ps2.0 {
+                    vpws-service-id {
+                        local 2007;
+                        remote 2005;
+                    }
+                }
+            }
+        }
+        interface ps2.0;
+        route-distinguisher 145.1.1.8:304;
+        vrf-target target:65100:304;
+    }
+    vrf_inside {
+        instance-type vrf;
+        routing-options {
+            inactive: auto-export {
+                family inet {
+                    unicast {
+                        rib-group rg-subs-to-def;
+                    }
+                }
+            }
+        }
+        system {
+            services {
+                dhcp-local-server {
+                    dhcpv6 {
+                        group TOOB_PUBLIC-DHCPv6-GRP-1 {
+                            overrides {
+                                delete-binding-on-renegotiation;
+                                dual-stack TOOB-PUBLIC-DUAL-STACK;
+                            }
+                            interface demux0.0;
+                            interface ps1.0;
+                            interface ps2.0;
+                        }
+                        active-leasequery {
+                            timeout 30;
+                            idle-timeout 20;
+                            peer-address {
+                                fd00:6438:8e33:12::1;
+                            }
+                        }
+                    }
+                    pool-match-order {
+                        external-authority;
+                        option-82;
+                        ip-address-first;
+                    }
+                    group TOOB_PUBLIC-DHCPv4-GRP-1 {
+                        overrides {
+                            client-discover-match incoming-interface;
+                            delete-binding-on-renegotiation;
+                            dual-stack TOOB-PUBLIC-DUAL-STACK;
+                        }
+                        interface demux0.0;
+                        interface ps1.0;
+                        interface ps2.0;
+                    }
+                    dual-stack-group TOOB-PUBLIC-DUAL-STACK {
+                        authentication {
+                            password test;
+                            username-include {
+                                mac-address;
+                            }
+                        }
+                        dynamic-profile toob-aris-ip;
+                        inactive: on-demand-address-allocation;
+                        inactive: protocol-master inactive: inet;
+                    }
+                    active-leasequery {
+                        peer-address {
+                            192.168.240.1;
+                        }
+                        timeout 30;
+                        idle-timeout 20;
+                    }
+                }
+            }
+        }
+        access {
+            address-assignment {
+                pool TOOB-DUMMY-POOL {
+                    link TOOB-CGNAT-DYNAMIC-1;
+                    family inet {
+                        network 145.40.160.0/30;
+                        dhcp-attributes {
+                            maximum-lease-time 600;
+                            name-server {
+                                45.13.4.11;
+                                45.13.4.12;
+                            }
+                            router {
+                                145.40.160.1;
+                            }
+                        }
+                        excluded-range TEST {
+                            low 145.40.160.1;
+                            high 145.40.160.3;
+                        }
+                    }
+                }
+                pool TOOB-v6-IA_NA-POOL {
+                    family inet6 {
+                        prefix 2a0e:cb00:700b::/64;
+                        range v6-na-range {
+                            low 2a0e:cb00:700b:0:c000::1/128;
+                            high 2a0e:cb00:700b:0:c7ff::ffff/128;
+                        }
+                        dhcp-attributes {
+                            maximum-lease-time 600;
+                            dns-server {
+                                2a0e:cb00:700b:2::1;
+                                2a0e:cb00:700b:2::2;
+                            }
+                        }
+                    }
+                }
+                pool TOOB-CGNAT-DYNAMIC-1 {
+                    family inet {
+                        network 100.68.0.0/16;
+                        range net-range {
+                            low 100.68.254.0;
+                            high 100.68.254.255;
+                        }
+                        dhcp-attributes {
+                            maximum-lease-time 3600;
+                            name-server {
+                                45.13.4.11;
+                                45.13.4.12;
+                            }
+                            router {
+                                100.68.0.1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        access-profile TOOB-ACCESS-PROFILE;
+        interface gr-0/0/0.1;
+        interface ae0.200;
+        interface ae3.200;
+        interface lo0.1;
+        route-distinguisher 145.1.1.8:651;
+        vrf-import ipv6-import-vpn;
+        vrf-target target:65100:651;
+        vrf-table-label;
+    }
+}
+dynamic-profiles {
+    TOOB-SUBSCRIBER-DOUBLETAG-VLAN-PROFILE {
+        routing-instances {
+            "$junos-routing-instance" {
+                interface "$junos-interface-name" {
+                    any;
+                }
+            }
+        }
+        interfaces {
+            "$junos-interface-ifd-name" {
+                unit "$junos-interface-unit" {
+                    vlan-tags outer "$junos-stacked-vlan-id" inner "$junos-vlan-id";
+                    family inet {
+                        unnumbered-address "$junos-loopback-interface";
+                    }
+                    family inet6 {
+                        unnumbered-address "$junos-loopback-interface";
+                    }
+                }
+            }
+        }
+    }
+    TOOB-SUBSCRIBER-DOUBLETAG-IP-PROFILE {
+        routing-instances {
+            "$junos-routing-instance" {
+                interface "$junos-interface-name";
+            }
+        }
+        interfaces {
+            demux0 {
+                unit "$junos-interface-unit" {
+                    actual-transit-statistics;
+                    proxy-arp;
+                    family inet {
+                        unnumbered-address "$junos-loopback-interface";
+                    }
+                    family inet6 {
+                        unnumbered-address "$junos-loopback-interface";
+                    }
+                }
+            }
+        }
+        protocols {
+            router-advertisement {
+                interface "$junos-interface-name" {
+                    max-advertisement-interval 60;
+                    min-advertisement-interval 30;
+                    managed-configuration;
+                    no-link-mtu;
+                }
+            }
+        }
+        class-of-service {
+            traffic-control-profiles {
+                TC_PROF_TRAFFICSHAPER {
+                    scheduler-map CF_SCHED_MAP;
+                    shaping-rate 1g burst-size 32k;
+                }
+            }
+            interfaces {
+                demux0 {
+                    unit "$junos-interface-unit" {
+                        output-traffic-control-profile TC_PROF_TRAFFICSHAPER;
+                        classifiers {
+                            ieee-802.1 CLASSIFIER_DOT1P vlan-tag outer;
+                        }
+                        rewrite-rules {
+                            ieee-802.1 REWRITE_DOT1P vlan-tag outer-and-inner;
+                        }
+                    }
+                }
+            }
+            scheduler-maps {
+                CF_SCHED_MAP {
+                    forwarding-class FC_BEST_EFFORT scheduler BE_SCHED;
+                }
+            }
+            schedulers {
+                BE_SCHED {
+                    priority low;
+                    drop-profile-map loss-priority low protocol any drop-profile WRED_DROP;
+                }
+            }
+        }
+    }
+    toob-aris-ip {
+        routing-instances {
+            "$junos-routing-instance" {
+                interface "$junos-interface-name" {
+                    any;
+                }
+            }
+        }
+        interfaces {
+            demux0 {
+                unit "$junos-interface-unit" {
+                    actual-transit-statistics;
+                    no-traps;
+                    proxy-arp restricted;
+                    demux-options {
+                        underlying-interface "$junos-underlying-interface";
+                    }
+                    family inet {
+                        mac-validate loose;
+                        demux-source {
+                            $junos-subscriber-ip-address;
+                        }
+                        unnumbered-address "$junos-loopback-interface" preferred-source-address "$junos-preferred-source-address";
+                    }
+                    family inet6 {
+                        demux-source {
+                            "$junos-subscriber-ipv6-address";
+                        }
+                        unnumbered-address "$junos-loopback-interface";
+                    }
+                }
+            }
+        }
+        protocols {
+            router-advertisement {
+                interface "$junos-interface-name" {
+                    max-advertisement-interval 60;
+                    min-advertisement-interval 30;
+                    managed-configuration;
+                    no-link-mtu;
+                }
+            }
+        }
+        class-of-service {
+            traffic-control-profiles {
+                TC_PROF_TRAFFICSHAPER {
+                    scheduler-map CF_SCHED_MAP;
+                    shaping-rate 1g burst-size 32k;
+                }
+            }
+            interfaces {
+                demux0 {
+                    unit "$junos-interface-unit" {
+                        output-traffic-control-profile TC_PROF_TRAFFICSHAPER;
+                        classifiers {
+                            ieee-802.1 CLASSIFIER_DOT1P vlan-tag outer;
+                        }
+                        rewrite-rules {
+                            ieee-802.1 REWRITE_DOT1P vlan-tag outer-and-inner;
+                        }
+                    }
+                }
+            }
+            scheduler-maps {
+                CF_SCHED_MAP {
+                    forwarding-class FC_BEST_EFFORT scheduler BE_SCHED;
+                    forwarding-class FC_EF scheduler FC_SCHED;
+                }
+            }
+            schedulers {
+                BE_SCHED {
+                    priority low;
+                    drop-profile-map loss-priority low protocol any drop-profile WRED_DROP;
+                }
+                FC_SCHED {
+                    priority low;
+                    drop-profile-map loss-priority low protocol any drop-profile WRED_DROP;
+                }
+            }
+        }
+    }
+}
+routing-options {
+    inactive: traceoptions {
+        file rpd-trace;
+        flag all;
+        level all;
+    }
+    router-id 145.1.1.8;
+    autonomous-system 65100;
+    static {
+        route 10.0.0.0/8 {
+            next-hop 172.30.190.1;
+            no-readvertise;
+        }
+        route 172.16.0.0/12 {
+            next-hop 172.30.190.1;
+            no-readvertise;
+        }
+        route 192.168.30.0/24 next-hop 172.30.190.1;
+    }
+    rib-groups {
+        inactive: rg-subs-to-def {
+            import-rib [ vrf_inside.inet.0 inet.0 ];
+            import-policy cgnat-export-subs;
+        }
+    }
+    forwarding-table {
+        export ECMP;
+    }
+}
+protocols {
+    bgp {
+        group to_rr {
+            local-address 145.1.1.8;
+            family inet {
+                unicast;
+            }
+            family inet-vpn {
+                unicast;
+            }
+            family inet6 {
+                unicast;
+            }
+            family inet6-vpn {
+                unicast;
+            }
+            family evpn {
+                signaling;
+            }
+            export cgnat-export-subs;
+            peer-as 65100;
+            multipath;
+            neighbor 145.1.1.1;
+            neighbor 145.1.1.2;
+        }
+    }
+    ldp {
+        track-igp-metric;
+        interface ae0.100;
+        interface ae3.100;
+        interface lo0.0;
+    }
+    mpls {
+        ipv6-tunneling;
+        interface ae0.100;
+        interface ae3.100;
+    }
+    ospf {
+        area 0.0.0.0 {
+            interface lo0.0 {
+                passive;
+            }
+            interface ae3.100 {
+                interface-type p2p;
+            }
+            interface ae0.100 {
+                interface-type p2p;
+            }
+        }
+        reference-bandwidth 1000g;
+    }
+    ospf3 {
+        area 0.0.0.0 {
+            interface lo0.0 {
+                passive;
+            }
+            interface ae0.100 {
+                interface-type p2p;
+            }
+            interface ae3.100 {
+                interface-type p2p;
+            }
+        }
+        reference-bandwidth 1000g;
+    }
+    lldp {
+        port-id-subtype interface-name;
+        neighbour-port-info-display port-id;
+        interface all;
+    }
+}
+
+toob@mx204-16> exit 
+

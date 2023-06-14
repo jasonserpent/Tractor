@@ -1,0 +1,2 @@
+Last login: Tue Jun 13 15:28:30 2023 from 192.168.30.92
+--- JUNOS 23.1R1-S1.2-EVO Linux (none) 5.2.60-yocto-standard-g3549735 #1 SMP PREEMPT Mon Jan 9 09:19:10 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux
